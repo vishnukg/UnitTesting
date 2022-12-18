@@ -1,13 +1,23 @@
 {
   "name": "unittesting",
   "version": "1.0.0",
+  "description": "",
   "main": "dist/index.js",
   "scripts": {
     "start": "tsc && node dist/index.js",
     "test": "vitest run --coverage",
     "watch": "vitest"
   },
-  "packageManager": "yarn@3.3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishnukg/UnitTesting.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vishnukg/UnitTesting/issues"
+  },
+  "homepage": "https://github.com/vishnukg/UnitTesting#readme",
   "devDependencies": {
     "@types/node": "^18.11.17",
     "@vitest/coverage-c8": "^0.25.8",
