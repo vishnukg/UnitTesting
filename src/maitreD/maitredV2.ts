@@ -1,10 +1,10 @@
-import { Reservation } from "./reservation";
-import { ReservationRepository } from "./ReservationRepository";
+import { IReservationRepository } from "../repository/IReservationRepository";
+import { Reservation } from "../reservation";
 
 export class MaitreDV2 {
   private capacity: number;
-  private reservationRepo: ReservationRepository;
-  constructor(capacity: number, reservationRepo: ReservationRepository) {
+  private reservationRepo: IReservationRepository;
+  constructor(capacity: number, reservationRepo: IReservationRepository) {
     this.capacity = capacity;
     this.reservationRepo = reservationRepo;
   }

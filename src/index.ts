@@ -1,4 +1,4 @@
-import { MaitreD } from "./maitred";
+import { MaitreD } from "./maitreD/maitred";
 
 const maitred = new MaitreD(10);
 

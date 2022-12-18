@@ -1,3 +1,3 @@
-export interface ReservationRepository {
+export interface IReservationRepository {
   getReservationQuantity(Date: Date): number;
 }
