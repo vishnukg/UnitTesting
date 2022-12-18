@@ -1,11 +1,20 @@
 {
   "name": "unittesting",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "test": "vitest run --coverage",
+    "watch": "vitest"
+  },
   "packageManager": "yarn@3.3.0",
   "devDependencies": {
     "@types/node": "^18.11.17",
     "@vitest/coverage-c8": "^0.25.8",
-    "tsc": "^2.0.4",
     "vitest": "^0.25.8",
     "vitest-mock-extended": "^1.0.7"
+  },
+  "dependencies": {
+    "typescript": "^4.9.4"
   }
 }

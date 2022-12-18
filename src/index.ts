@@ -1,4 +1,5 @@
 import { MaitreD } from "./maitred";
 
-const reservationRepo = new ReservationRepository();
-const maitred = new MaitreD();
+const maitred = new MaitreD(10);
+
+console.log(maitred.getTotalCapacity());

@@ -30,7 +30,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/node", "npm:18.11.17"],\
             ["@vitest/coverage-c8", "npm:0.25.8"],\
-            ["tsc", "npm:2.0.4"],\
+            ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"],\
             ["vitest", "virtual:2c25be29afb68ccb0b35b5827423824cff6b38137f748228e90f06b002811115fde4648e11ff90c8f42ffbcd7e1e4e1b1f5580d1f10f5e2d58471e98d33be36c#npm:0.25.8"],\
             ["vitest-mock-extended", "virtual:f8fd4a0d74cd64c76b41d3117e7be83ec9ef758a2fb78cead03e8b4d115428145afa979b7d3fe6460294421cb595279fb9a6760c0191f6bc3eea619ef25f0e5b#npm:1.0.7"]\
           ],\
@@ -1876,20 +1876,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["ts-essentials", "virtual:8b39df5e9e1fd97f4f73801f721261f2b5aa0cbd9afd3383de9ac52f8743e7938946e93266bb4b21e8b9d029ffef0fcc17fbc56d2876ccd9b016d9e64928a248#npm:9.3.0"],\
             ["@types/typescript", null],\
-            ["typescript", null]\
+            ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"]\
           ],\
           "packagePeers": [\
             "@types/typescript",\
             "typescript"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["tsc", [\
-        ["npm:2.0.4", {\
-          "packageLocation": "./.yarn/cache/tsc-npm-2.0.4-e331b066cb-50b1024088.zip/node_modules/tsc/",\
-          "packageDependencies": [\
-            ["tsc", "npm:2.0.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1899,6 +1890,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/type-detect-npm-4.0.8-8d8127b901-62b5628bff.zip/node_modules/type-detect/",\
           "packageDependencies": [\
             ["type-detect", "npm:4.0.8"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["typescript", [\
+        ["patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-b74a6ef84c-37f6e2c3c5.zip/node_modules/typescript/",\
+          "packageDependencies": [\
+            ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1930,7 +1930,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["unittesting", "workspace:."],\
             ["@types/node", "npm:18.11.17"],\
             ["@vitest/coverage-c8", "npm:0.25.8"],\
-            ["tsc", "npm:2.0.4"],\
+            ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"],\
             ["vitest", "virtual:2c25be29afb68ccb0b35b5827423824cff6b38137f748228e90f06b002811115fde4648e11ff90c8f42ffbcd7e1e4e1b1f5580d1f10f5e2d58471e98d33be36c#npm:0.25.8"],\
             ["vitest-mock-extended", "virtual:f8fd4a0d74cd64c76b41d3117e7be83ec9ef758a2fb78cead03e8b4d115428145afa979b7d3fe6460294421cb595279fb9a6760c0191f6bc3eea619ef25f0e5b#npm:1.0.7"]\
           ],\
@@ -2070,7 +2070,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/typescript", null],\
             ["@types/vitest", null],\
             ["ts-essentials", "virtual:8b39df5e9e1fd97f4f73801f721261f2b5aa0cbd9afd3383de9ac52f8743e7938946e93266bb4b21e8b9d029ffef0fcc17fbc56d2876ccd9b016d9e64928a248#npm:9.3.0"],\
-            ["typescript", null],\
+            ["typescript", "patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=d73830"],\
             ["vitest", "virtual:2c25be29afb68ccb0b35b5827423824cff6b38137f748228e90f06b002811115fde4648e11ff90c8f42ffbcd7e1e4e1b1f5580d1f10f5e2d58471e98d33be36c#npm:0.25.8"]\
           ],\
           "packagePeers": [\
