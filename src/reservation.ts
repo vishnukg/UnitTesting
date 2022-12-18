@@ -1,5 +1,5 @@
 export type Reservation = {
   id: number;
-  Date: Date;
+  Date: string;
   Quantity: number;
 };

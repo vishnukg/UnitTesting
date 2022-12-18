@@ -1,3 +1,3 @@
 export interface IReservationRepository {
-  getReservationQuantity(Date: Date): number;
+  getReservationQuantity: (Date: string) => number;
 }
