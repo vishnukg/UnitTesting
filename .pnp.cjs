@@ -12,14 +12,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     ],\
     "dependencyTreeRoots": [\
       {\
-        "name": "UnitTesting",\
+        "name": "unittesting",\
         "reference": "workspace:."\
       }\
     ],\
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["UnitTesting", ["workspace:."]]\
+      ["unittesting", ["workspace:."]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -33,16 +33,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["UnitTesting", [\
-        ["workspace:.", {\
-          "packageLocation": "./",\
-          "packageDependencies": [\
-            ["UnitTesting", "workspace:."],\
-            ["tsc", "npm:2.0.4"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["tsc", [\
         ["npm:2.0.4", {\
           "packageLocation": "./.yarn/cache/tsc-npm-2.0.4-e331b066cb-50b1024088.zip/node_modules/tsc/",\
@@ -50,6 +40,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tsc", "npm:2.0.4"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["unittesting", [\
+        ["workspace:.", {\
+          "packageLocation": "./",\
+          "packageDependencies": [\
+            ["unittesting", "workspace:."],\
+            ["tsc", "npm:2.0.4"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]]\
     ]\
