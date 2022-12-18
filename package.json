@@ -1,0 +1,7 @@
+{
+  "name": "UnitTesting",
+  "packageManager": "yarn@3.3.0",
+  "devDependencies": {
+    "tsc": "^2.0.4"
+  }
+}
