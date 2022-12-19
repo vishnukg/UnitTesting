@@ -224,4 +224,5 @@ A presentation by Vishnu Ganesan
 
 ## Bibliography
 
-The Art of Unit Testing 2nd Ed, Roy Osherove
+- [The Art of Unit Testing 2nd Ed, Roy Osherove](https://www.manning.com/books/the-art-of-unit-testing-second-edition)
+- [Unit testing, Martin Fowler](https://martinfowler.com/bliki/UnitTest.html)
