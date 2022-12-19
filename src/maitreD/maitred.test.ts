@@ -3,9 +3,9 @@ import { MaitreD } from "./maitred";
 
 test("Get Total Capacity returns total capacity", () => {
   const capacity = 10;
-  const maiterd = new MaitreD(capacity);
+  const sut = new MaitreD(capacity);
 
-  const result = maiterd.getTotalCapacity();
+  const result = sut.getTotalCapacity();
 
   assert.equal(result, capacity);
 });

@@ -14,9 +14,9 @@ test("CanReserve returns true when there's capacity available", () => {
     Date: "12/12/2022",
     Quantity: 3,
   };
-  const maiterd = new MaitreDV2(capacity, stubRepository);
+  const sut = new MaitreDV2(capacity, stubRepository);
 
-  const result = maiterd.CanReserve(reservation);
+  const result = sut.CanReserve(reservation);
 
   assert.equal(result, true);
 });
@@ -31,9 +31,9 @@ test("CanReserve returns false when there's no capacity available", () => {
     Date: "12/12/2022",
     Quantity: 3,
   };
-  const maiterd = new MaitreDV2(capacity, stubRepository);
+  const sut = new MaitreDV2(capacity, stubRepository);
 
-  const result = maiterd.CanReserve(reservation);
+  const result = sut.CanReserve(reservation);
 
   assert.equal(result, false);
 });
@@ -43,7 +43,7 @@ test("Get Total Capacity returns total capacity", () => {
   const stubRepository = mock<IReservationRepository>();
   const maiterd = new MaitreDV2(capacity, stubRepository);
 
-  const result = maiterd.getTotalCapacity();
+  const sut = maiterd.getTotalCapacity();
 
-  assert.equal(result, capacity);
+  assert.equal(sut, capacity);
 });
