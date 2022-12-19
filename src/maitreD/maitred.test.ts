@@ -3,6 +3,8 @@ import { mock } from "vitest-mock-extended";
 import { MaitreD, Reservation } from ".";
 import { IReservationRepository } from "../repository";
 
+// Value based testing
+
 test("CanReserve returns true when there's capacity available", () => {
   //Arrange
   const capacity = 10;
@@ -55,3 +57,5 @@ test("Get Total Capacity returns total capacity", () => {
   //Assert
   assert.equal(sut, capacity);
 });
+
+// Interaction based testing

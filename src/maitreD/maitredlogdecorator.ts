@@ -15,6 +15,7 @@ export class MaitreDLogDecorator implements IMaitreD {
   }
 
   canReserve(reservation: Reservation): boolean {
+    this.logger.Log("Using logging decorator");
     this.logger.Log("Checking if the reservation can be made");
     return this.maitreD.canReserve(reservation);
   }
