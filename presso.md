@@ -7,6 +7,7 @@ A presentation by Vishnu Ganesan
 ## Agenda
 
 - Definitions
+- Sociable vs Solitary Tests
 - Kinds of Unit Tests
 - Test Smells
 - Conclusion
@@ -110,23 +111,57 @@ A presentation by Vishnu Ganesan
 
 ---
 
+## Sociable vs Solitary Tests
+
+```
+        ┌ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+          Sociable Tests
+        └ ─ ─ ─ ─ ─ ─ ─ ─ ┘           .─.
+                              ┌──────▶███)
+                              │       `─'
+┌────┐              .─.       │
+│████│─────────────▶███)──────┤
+└────┘              `─'       │
+┌ ─ ─              ┌ ─ ┐      │       .─.
+ Test│              SUT       └─────▶(███)
+└ ─ ─              └ ─ ┘              `─'
+
+
+
+                                      .─.          .─.
+                              ┌──────▶   )        (███)
+                              │       `─'          `─'
+┌────┐              .─.       │
+│████│─────────────▶███)──────┤
+└────┘              `─'       │
+┌ ─ ─              ┌ ─ ┐      │       .─.          .─.
+ Test│              SUT       └─────▶(   )        (███)
+└ ─ ─              └ ─ ┘              `─'          `─'
+
+        ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─
+           Solitary Tests  │
+        └ ─ ─ ─ ─ ─ ─ ─ ─ ─
+```
+
+---
+
 ## Kinds of Unit Test
 
-- State Based
+- State based testing
   <br>
   <br>
 
   <br>
   <br>
 
-- Value Based
+- Value based testing
   <br>
   <br>
 
   <br>
   <br>
 
-- Interaction Testing
+- Interaction testing
   <br>
   <br>
 
