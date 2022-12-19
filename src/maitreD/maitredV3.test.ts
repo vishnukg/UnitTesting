@@ -1,4 +1,4 @@
-import { test, assert } from "vitest";
+import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { ILogger } from "../cross-cutting/logger";
 import { IReservationRepository } from "../repository/IReservationRepository";
@@ -50,4 +50,43 @@ test("Get Total Capacity returns total capacity", () => {
   const result = sut.getTotalCapacity();
 
   assert.equal(result, capacity);
+});
+
+test("CanReserve when called invokes logger with message", () => {
+  const capacity = 10;
+  const bookedSeats = 3;
+  const stubRepository = mock<IReservationRepository>();
+  stubRepository.getReservationQuantity.mockReturnValue(bookedSeats);
+  const mockLogger = mock<ILogger>();
+  const sut = new MaitreDV3(capacity, stubRepository, mockLogger);
+  const reservation: Reservation = {
+    id: 1,
+    Date: "12/12/2022",
+    Quantity: 3,
+  };
+
+  sut.CanReserve(reservation);
+
+  expect(mockLogger.Log).toHaveBeenCalledWith(
+    "Checking if the reservation can be made"
+  );
+});
+
+test("CanReserve when called invokes getReservationQuantity from repository", () => {
+  const capacity = 10;
+  const bookedSeats = 3;
+  const mockRepository = mock<IReservationRepository>();
+  const stubLogger = mock<ILogger>();
+  const sut = new MaitreDV3(capacity, mockRepository, stubLogger);
+  const reservation: Reservation = {
+    id: 1,
+    Date: "12/12/2022",
+    Quantity: 3,
+  };
+
+  sut.CanReserve(reservation);
+
+  expect(mockRepository.getReservationQuantity).toHaveBeenCalledWith(
+    reservation.Date
+  );
 });

@@ -26,7 +26,7 @@ export class MaitreDV3 {
       reservation.Date
     );
 
-    this.logger.Log(reservedSeats.toString());
+    this.logger.Log("Checking if the reservation can be made");
 
     if (reservedSeats + reservation.Quantity <= this.capacity) {
       return true;
