@@ -6,7 +6,7 @@ A presentation by Vishnu Ganesan
 
 ## Agenda
 
-- Definitions
+- Concepts
 - Sociable vs Solitary Tests
 - Kinds of Unit Tests
 - Test Smells
@@ -14,7 +14,7 @@ A presentation by Vishnu Ganesan
 
 ---
 
-## Definitions
+## Concepts
 
 - **Dependency Injection**
   <br>
