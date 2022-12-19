@@ -1,5 +1,5 @@
 import { test, assert } from "vitest";
-import { Counter } from "./counter";
+import { Counter } from ".";
 
 test("Calling Click once will increment the counter value by 1", () => {
   const initialValue = 0;

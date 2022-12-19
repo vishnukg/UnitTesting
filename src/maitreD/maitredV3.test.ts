@@ -1,9 +1,9 @@
 import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
-import { ILogger } from "../cross-cutting/logger";
-import { IReservationRepository } from "../repository/IReservationRepository";
+import { MaitreDV3 } from ".";
+import { ILogger } from "../cross-cutting";
+import { IReservationRepository } from "../repository";
 import { Reservation } from "../reservation";
-import { MaitreDV3 } from "./maitredV3";
 
 test("CanReserve returns true when there's capacity available", () => {
   const capacity = 10;
@@ -74,7 +74,6 @@ test("CanReserve when called invokes logger with message", () => {
 
 test("CanReserve when called invokes getReservationQuantity from repository", () => {
   const capacity = 10;
-  const bookedSeats = 3;
   const mockRepository = mock<IReservationRepository>();
   const stubLogger = mock<ILogger>();
   const sut = new MaitreDV3(capacity, mockRepository, stubLogger);

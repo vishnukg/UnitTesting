@@ -1,8 +1,8 @@
 import { test, assert } from "vitest";
 import { mock } from "vitest-mock-extended";
-import { IReservationRepository } from "../repository/IReservationRepository";
+import { MaitreDV2 } from ".";
+import { IReservationRepository } from "../repository";
 import { Reservation } from "../reservation";
-import { MaitreDV2 } from "./maitredV2";
 
 test("CanReserve returns true when there's capacity available", () => {
   const capacity = 10;

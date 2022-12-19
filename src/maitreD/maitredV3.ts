@@ -1,5 +1,5 @@
-import { ILogger } from "../cross-cutting/logger";
-import { IReservationRepository } from "../repository/IReservationRepository";
+import { ILogger } from "../cross-cutting";
+import { IReservationRepository } from "../repository";
 import { Reservation } from "../reservation";
 
 export class MaitreDV3 {

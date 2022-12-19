@@ -1,4 +1,4 @@
-import { IReservationRepository } from "../repository/IReservationRepository";
+import { IReservationRepository } from "../repository";
 import { Reservation } from "../reservation";
 
 export class MaitreDV2 {

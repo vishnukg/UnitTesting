@@ -1,5 +1,5 @@
 import { test, assert } from "vitest";
-import { MaitreD } from "./maitred";
+import { MaitreD } from ".";
 
 test("Get Total Capacity returns total capacity", () => {
   const capacity = 10;

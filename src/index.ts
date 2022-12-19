@@ -1,9 +1,10 @@
 import { MaitreD } from "./maitreD/maitred";
+import { MaitreDV2 } from "./maitreD/maitredV2";
 
 // Composition Root
 //
 // Pure DI
 //
-const maitred = new MaitreD(10);
+const maitreD = new MaitreD(10);
 
-console.log(maitred.getTotalCapacity());
+console.log(maitreD.getTotalCapacity());
