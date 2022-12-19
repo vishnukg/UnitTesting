@@ -19,21 +19,32 @@ A presentation by Vishnu Ganesan
 
 _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
 
-- **Pure DI**
+- **Pure DI** \
 
   _Pure DI is Dependency Injection without a DI Container_
 
-- **Composition Root**
+- **Composition Root**\
 
   _A Composition Root is a (preferably) unique location in an application where modules are composed together._
 
-- Constructor Over-Injection
+- **Constructor Over-Injection**\
 
-- Pure Functions
+  ```typescript
+  constructor(
+    capacity: number,
+    reservationRepo: IReservationRepository,
+    logger: ILogger,
+    authorizationManager: IAuthorizationManager,
+    cache: ICache,
+    circuitBreaker: ICircuitBreaker
+  )
+  ```
 
-- Impure Functions
+- **Pure Functions**\
 
-- Unit Test
+- **Impure Functions**\
+
+- **Unit Test**\
 
 ---
 
