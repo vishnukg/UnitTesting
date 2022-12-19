@@ -10,7 +10,7 @@ A presentation by Vishnu Ganesan
 - Sociable vs Solitary Tests
 - Kinds of Unit Tests
 - Test Smells
-- Conclusion
+- Bibliography
 
 ---
 
@@ -230,7 +230,9 @@ A presentation by Vishnu Ganesan
 
 ---
 
-## Conclusion
+## Bibliography
+
+The Art of Unit Testing 2nd Ed, Roy Osherove
 
 ```
 
