@@ -135,6 +135,10 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
+---
+
+## Difference between a stub and a mock
+
 ```
     ┏━━━━━━━━━━━━┓                  ┏━━━━━━━━━━━━━┓
     ┃     SUT    ┃◀────────────────▶┃    STUB     ┃
