@@ -8,7 +8,7 @@ A presentation by Vishnu Ganesan
 
 - Concepts
 - Sociable vs Solitary Tests
-- Kinds of Unit Tests
+- Stubs vs Mocks
 - Test Smells
 - Bibliography
 
@@ -63,14 +63,7 @@ A presentation by Vishnu Ganesan
 - **Pure Functions**
   <br>
   <br>
-
-  <br>
-  <br>
-
-- **Impure Functions**
-  <br>
-  <br>
-
+  _Simply, a pure function is a function that is deterministic and does not produces side effects._
   <br>
   <br>
 
@@ -82,29 +75,27 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
-- **Fakes**
+- State based testing
+  <br>
+  <br>
+  _State-based testing (also called state verification) determines whether the exercised method worked correctly by examining the changed behavior of the system under test and its collaborators (dependencies) after the method is exercised._
+
+  _State-based testing is about checking for noticeable behavior changes in the system under test, after changing its state._
   <br>
   <br>
 
-  _A fake is a generic term that can be used to describe either a stub or a mock object (handwritten or otherwise), because they both look like the real object. Whether a fake is a stub or a mock depends on how it’s used in the current test. If it’s used to check an interaction (asserted against), it’s a mock object. Otherwise, it’s a stub._
-
+- Value based testing
+  <br>
+  <br>
+  _Value-based testing checks the value returned from a function._
   <br>
   <br>
 
-- **Stubs**
+- Interaction testing
   <br>
   <br>
 
-  _A stub is a controllable replacement for an existing dependency (or collaborator) in the system. By using a stub, you can test your code without dealing with the dependency directly._
-
-  <br>
-  <br>
-
-- **Mocks**
-  <br>
-  <br>
-
-  _A mock object is a fake object in the system that decides whether the unit test has passed or failed. It does so by verifying whether the object under test called the fake object as expected. There’s usually no more than one mock per test._
+  _Interaction testing is testing how an object sends messages (calls methods) to other objects. You use interaction testing when calling another object is the end result of a specific unit of work._
 
   <br>
   <br>
@@ -145,34 +136,34 @@ A presentation by Vishnu Ganesan
 
 ---
 
-## Kinds of Unit Test
+## Stubs vs Mocks
 
-- State based testing
-  <br>
-  <br>
-
+- **Fakes**
   <br>
   <br>
 
-- Value based testing
-  <br>
-  <br>
+  _A fake is a generic term that can be used to describe either a stub or a mock object (handwritten or otherwise), because they both look like the real object. Whether a fake is a stub or a mock depends on how it’s used in the current test. If it’s used to check an interaction (asserted against), it’s a mock object. Otherwise, it’s a stub._
 
   <br>
   <br>
 
-- Interaction testing
+- **Stubs**
   <br>
   <br>
 
-  _Interaction testing is testing how an object sends messages (calls methods) to other objects. You use interaction testing when calling another object is the end result of a specific unit of work._
+  _A stub is a controllable replacement for an existing dependency (or collaborator) in the system. By using a stub, you can test your code without dealing with the dependency directly._
 
   <br>
   <br>
 
----
+- **Mocks**
+  <br>
+  <br>
 
-## Difference between a stub and a mock
+  _A mock object is a fake object in the system that decides whether the unit test has passed or failed. It does so by verifying whether the object under test called the fake object as expected. There’s usually no more than one mock per test._
+
+  <br>
+  <br>
 
 ```
     ┏━━━━━━━━━━━━┓                  ┏━━━━━━━━━━━━━┓
@@ -208,7 +199,7 @@ A presentation by Vishnu Ganesan
 
 ---
 
-## Characterstics of a good Unit Test
+## Characteristics of a good Unit Test
 
 - It should be automated and repeatable
 - It should be easy to implement
@@ -216,6 +207,7 @@ A presentation by Vishnu Ganesan
 - It should have full control of the unit under test
 - It should be fully isolated.
 - Avoid Setup and TearDown methods as much as you can.
+- Avoid following DRY principle in unit tests
 - A test should only fail for one reason.
 
 ---
@@ -233,7 +225,3 @@ A presentation by Vishnu Ganesan
 ## Bibliography
 
 The Art of Unit Testing 2nd Ed, Roy Osherove
-
-```
-
-```
