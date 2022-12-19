@@ -15,7 +15,8 @@ A presentation by Vishnu Ganesan
 
 ## Definitions
 
-- **Dependency Injection**<br>
+- **Dependency Injection**
+  <br>
   <br>
 
   _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
@@ -23,23 +24,26 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
-- **Pure DI**<br>
+- **Pure DI**
+  <br>
   <br>
 
   _Pure DI is Dependency Injection without a DI Container_
 
-  <br>
-  <br>
+<br>
+<br>
 
-- **Composition Root**<br>
+- **Composition Root**
+  <br>
   <br>
 
   _A Composition Root is a (preferably) unique location in an application where modules are composed together._
 
-  <br>
-  <br>
+<br>
+<br>
 
-- **Constructor Over-Injection**<br>
+- **Constructor Over-Injection**
+  <br>
   <br>
 
   ```typescript
@@ -55,22 +59,39 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
-- **Pure Functions** <br>
-
+- **Pure Functions**
+  <br>
   <br>
 
-- **Impure Functions** <br>
-
+  <br>
   <br>
 
-- **Unit Test** <br>
+- **Impure Functions**
+  <br>
+  <br>
+
+  <br>
+  <br>
+
+- **Unit Test**
+  <br>
   <br>
 
   _A unit test is a piece of a code (usually a method) that invokes another piece of code and checks the correctness of some assumptions after- ward. If the assumptions turn out to be wrong, the unit test has failed. A unit is a method or function._
   <br>
   <br>
 
-- **Stubs** <br>
+- **Fakes**
+  <br>
+  <br>
+
+  _A fake is a generic term that can be used to describe either a stub or a mock object (handwritten or otherwise), because they both look like the real object. Whether a fake is a stub or a mock depends on how it’s used in the current test. If it’s used to check an interaction (asserted against), it’s a mock object. Otherwise, it’s a stub._
+
+  <br>
+  <br>
+
+- **Stubs**
+  <br>
   <br>
 
   _A stub is a controllable replacement for an existing dependency (or collaborator) in the system. By using a stub, you can test your code without dealing with the dependency directly._
@@ -78,8 +99,13 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
-- **Mocks** <br>
+- **Mocks**
+  <br>
+  <br>
 
+  _A mock object is a fake object in the system that decides whether the unit test has passed or failed. It does so by verifying whether the object under test called the fake object as expected. There’s usually no more than one mock per test._
+
+  <br>
   <br>
 
 ---
@@ -89,6 +115,7 @@ A presentation by Vishnu Ganesan
 - State Based
 - Value Based
 - Interaction Testing
+  _Interaction testing is testing how an object sends messages (calls methods) to other objects. You use interaction testing when calling another object is the end result of a specific unit of work._
 
 ```
     ┏━━━━━━━━━━━━┓                  ┏━━━━━━━━━━━━━┓
