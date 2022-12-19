@@ -1,8 +1,8 @@
+import { Reservation } from ".";
 import { ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
-import { Reservation } from "../reservation";
 
-export class MaitreDV3 {
+export class MaitreDLogDecorator {
   private capacity: number;
   private reservationRepo: IReservationRepository;
   private logger: ILogger;
