@@ -77,7 +77,7 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
 
-  _A unit test is a piece of a code (usually a method) that invokes another piece of code and checks the correctness of some assumptions after- ward. If the assumptions turn out to be wrong, the unit test has failed. A unit is a method or function._
+  _A unit test is a piece of a code (usually a method) that invokes another piece of code and checks the correctness of some assumptions afterward. If the assumptions turn out to be wrong, the unit test has failed. A unit is a method or function._
   <br>
   <br>
 
@@ -113,9 +113,27 @@ A presentation by Vishnu Ganesan
 ## Kinds of Unit Test
 
 - State Based
+  <br>
+  <br>
+
+  <br>
+  <br>
+
 - Value Based
+  <br>
+  <br>
+
+  <br>
+  <br>
+
 - Interaction Testing
+  <br>
+  <br>
+
   _Interaction testing is testing how an object sends messages (calls methods) to other objects. You use interaction testing when calling another object is the end result of a specific unit of work._
+
+  <br>
+  <br>
 
 ```
     ┏━━━━━━━━━━━━┓                  ┏━━━━━━━━━━━━━┓
