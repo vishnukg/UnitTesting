@@ -79,7 +79,7 @@ A presentation by Vishnu Ganesan
   <br>
   <br>
   _State-based testing (also called state verification) determines whether the exercised method worked correctly by examining the changed behavior of the system under test and its collaborators (dependencies) after the method is exercised._
-
+  <br>
   _State-based testing is about checking for noticeable behavior changes in the system under test, after changing its state._
   <br>
   <br>
