@@ -1,4 +1,4 @@
-# Ideas on Unit Testing
+# Thoughts on Unit Testing
 
 A presentation by Vishnu Ganesan
 
@@ -6,40 +6,56 @@ A presentation by Vishnu Ganesan
 
 ## Agenda
 
-- What is a Unit Test ?
+- Definitions
 - Kinds of Unit Tests
-  - Value Based
-  - State Based
-  - Interaction Testing
 - Test Smells
 - Conclusion
 
 ---
 
-## What is a Unit Test?
+## Definitions
 
-Create slides and present them without ever leaving your terminal.
+- **Dependency Injection**
+
+_When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
+
+- **Pure DI**
+
+  _Pure DI is Dependency Injection without a DI Container_
+
+- **Composition Root**
+
+  _A Composition Root is a (preferably) unique location in an application where modules are composed together._
+
+- Constructor Over-Injection
+
+- Pure Functions
+
+- Impure Functions
+
+- Unit Test
 
 ---
 
 ## Kinds of Unit Test
 
-```go
-package main
+- State Based
+- Value Based
+- Interaction Testing
 
-import "fmt"
+---
 
-func main() {
-  fmt.Println("Execute code directly inside the slides")
-}
-```
-
-You can execute code inside your slides by pressing `<C-e>`,
-the output of your command will be displayed at the end of the current slide.
+## Characterstics of a good Unit Test
 
 ---
 
 ## Test Smells
+
+- Constructor Over-injection is a code smell, not an anti-pattern.
+- Brittle Tests
+- Testing the structure of the code vs behaviour
+- Stubs vs Mocks
+- How to break the test smell ?
 
 ---
 
