@@ -1,8 +1,8 @@
-import { Reservation } from ".";
+import { IMaitreD, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 
-export class MaitreDV2 {
+export class MaitreDV2 implements IMaitreD {
   private capacity: number;
   private reservationRepo: IReservationRepository;
   private logger: ILogger;
@@ -21,7 +21,7 @@ export class MaitreDV2 {
     return this.capacity;
   }
 
-  CanReserve(reservation: Reservation): boolean {
+  canReserve(reservation: Reservation): boolean {
     const reservedSeats = this.reservationRepo.getReservationQuantity(
       reservation.Date
     );

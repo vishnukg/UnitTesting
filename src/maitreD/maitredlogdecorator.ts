@@ -1,36 +1,21 @@
-import { Reservation } from ".";
+import { IMaitreD, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
-import { IReservationRepository } from "../repository";
 
-export class MaitreDLogDecorator {
-  private capacity: number;
-  private reservationRepo: IReservationRepository;
+export class MaitreDLogDecorator implements IMaitreD {
+  private maitreD: IMaitreD;
   private logger: ILogger;
 
-  constructor(
-    capacity: number,
-    reservationRepo: IReservationRepository,
-    logger: ILogger
-  ) {
-    this.capacity = capacity;
-    this.reservationRepo = reservationRepo;
+  constructor(maitreD: IMaitreD, logger: ILogger) {
+    this.maitreD = maitreD;
     this.logger = logger;
   }
 
   getTotalCapacity(): number {
-    return this.capacity;
+    return this.maitreD.getTotalCapacity();
   }
 
-  CanReserve(reservation: Reservation): boolean {
-    const reservedSeats = this.reservationRepo.getReservationQuantity(
-      reservation.Date
-    );
-
+  canReserve(reservation: Reservation): boolean {
     this.logger.Log("Checking if the reservation can be made");
-
-    if (reservedSeats + reservation.Quantity <= this.capacity) {
-      return true;
-    }
-    return false;
+    return this.maitreD.canReserve(reservation);
   }
 }

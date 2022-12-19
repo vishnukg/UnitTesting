@@ -1,7 +1,7 @@
+import { IMaitreD, Reservation } from ".";
 import { IReservationRepository } from "../repository";
-import { Reservation } from "./reservation";
 
-export class MaitreD {
+export class MaitreD implements IMaitreD {
   private capacity: number;
   private reservationRepo: IReservationRepository;
   constructor(capacity: number, reservationRepo: IReservationRepository) {
@@ -13,7 +13,7 @@ export class MaitreD {
     return this.capacity;
   }
 
-  CanReserve(reservation: Reservation): boolean {
+  canReserve(reservation: Reservation): boolean {
     const reservedSeats = this.reservationRepo.getReservationQuantity(
       reservation.Date
     );

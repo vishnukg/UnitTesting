@@ -17,7 +17,7 @@ test("CanReserve returns true when there's capacity available", () => {
   };
   const sut = new MaitreDV2(capacity, stubRepository, stubLogger);
 
-  const result = sut.CanReserve(reservation);
+  const result = sut.canReserve(reservation);
 
   assert.equal(result, true);
 });
@@ -35,7 +35,7 @@ test("CanReserve returns false when there's no capacity available", () => {
   };
   const sut = new MaitreDV2(capacity, stubRepository, stubLogger);
 
-  const result = sut.CanReserve(reservation);
+  const result = sut.canReserve(reservation);
 
   assert.equal(result, false);
 });
@@ -64,7 +64,7 @@ test("CanReserve when called invokes logger with message", () => {
     Quantity: 3,
   };
 
-  sut.CanReserve(reservation);
+  sut.canReserve(reservation);
 
   expect(mockLogger.Log).toHaveBeenCalledWith(
     "Checking if the reservation can be made"
@@ -82,7 +82,7 @@ test("CanReserve when called invokes getReservationQuantity from repository", ()
     Quantity: 3,
   };
 
-  sut.CanReserve(reservation);
+  sut.canReserve(reservation);
 
   expect(mockRepository.getReservationQuantity).toHaveBeenCalledWith(
     reservation.Date

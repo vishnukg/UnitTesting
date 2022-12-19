@@ -15,7 +15,7 @@ test("CanReserve returns true when there's capacity available", () => {
   };
   const sut = new MaitreD(capacity, stubRepository);
 
-  const result = sut.CanReserve(reservation);
+  const result = sut.canReserve(reservation);
 
   assert.equal(result, true);
 });
@@ -32,7 +32,7 @@ test("CanReserve returns false when there's no capacity available", () => {
   };
   const sut = new MaitreD(capacity, stubRepository);
 
-  const result = sut.CanReserve(reservation);
+  const result = sut.canReserve(reservation);
 
   assert.equal(result, false);
 });
