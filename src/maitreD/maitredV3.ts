@@ -7,20 +7,14 @@ export class MaitreDV3 {
   private reservationRepo: IReservationRepository;
   private logger: ILogger;
 
-
-
   constructor(
     capacity: number,
     reservationRepo: IReservationRepository,
-    logger: ILogger,
-    authorizationManager: IAuthorizationManager,
-    cache: ICache,
-    CircuitBreaker: ICircuitBreaker
+    logger: ILogger
   ) {
     this.capacity = capacity;
     this.reservationRepo = reservationRepo;
-	  this.logger = logger;
-	  this.
+    this.logger = logger;
   }
 
   getTotalCapacity(): number {
