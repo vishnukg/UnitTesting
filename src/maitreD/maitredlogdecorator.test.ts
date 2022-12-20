@@ -1,8 +1,21 @@
 import { test, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
-import { MaitreD, MaitreDLogDecorator, Reservation } from ".";
+import { IMaitreD, MaitreD, MaitreDLogDecorator, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
 import { ReservationRepository } from "../repository";
+
+test("getTotalCapacity invokes getTotalCapacity from the actual MaitreD object", () => {
+  //Arrange
+  const mockMaitreD = mock<IMaitreD>();
+  const stubLogger = mock<ILogger>();
+  const sut = new MaitreDLogDecorator(mockMaitreD, stubLogger);
+
+  //Act
+  sut.getTotalCapacity();
+
+  //Assert
+  expect(mockMaitreD.getTotalCapacity).toHaveBeenCalled();
+});
 
 test("CanReserve when called invokes logger with message", () => {
   //Arrange

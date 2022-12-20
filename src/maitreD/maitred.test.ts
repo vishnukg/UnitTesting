@@ -1,6 +1,7 @@
-import { test, assert } from "vitest";
+import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { MaitreD, Reservation } from ".";
+import { ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 
 // Value based testing
@@ -59,3 +60,19 @@ test("Get Total Capacity returns total capacity", () => {
 });
 
 // Interaction based testing
+test("CanReserve when called invokes getReservationQuantity from repository", () => {
+  const capacity = 10;
+  const mockRepository = mock<IReservationRepository>();
+  const sut = new MaitreD(capacity, mockRepository);
+  const reservation: Reservation = {
+    id: 1,
+    Date: "12/12/2022",
+    Quantity: 3,
+  };
+
+  sut.canReserve(reservation);
+
+  expect(mockRepository.getReservationQuantity).toHaveBeenCalledWith(
+    reservation.Date
+  );
+});
