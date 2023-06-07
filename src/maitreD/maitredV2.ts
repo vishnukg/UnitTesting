@@ -22,11 +22,11 @@ export class MaitreDV2 implements IMaitreD {
   }
 
   canReserve(reservation: Reservation): boolean {
+    this.logger.Log("Checking if the reservation can be made");
+
     const reservedSeats = this.reservationRepo.getReservationQuantity(
       reservation.Date
     );
-
-    this.logger.Log("Checking if the reservation can be made");
 
     if (reservedSeats + reservation.Quantity <= this.capacity) {
       return true;
