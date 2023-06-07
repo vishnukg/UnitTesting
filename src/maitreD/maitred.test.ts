@@ -1,7 +1,6 @@
 import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { MaitreD, Reservation } from ".";
-import { ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 
 // Value based testing
