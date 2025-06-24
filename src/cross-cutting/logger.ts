@@ -1,3 +1,3 @@
 export interface ILogger {
-  Log(msg: string): void;
+    Log(msg: string): void;
 }

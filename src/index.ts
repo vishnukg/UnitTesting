@@ -11,9 +11,9 @@ import { ReservationRepository } from "./repository";
 const capacity = 10;
 const reservationRepository = new ReservationRepository();
 const reservation: Reservation = {
-  id: 1,
-  Date: "12/12/2022",
-  Quantity: 3,
+    id: 1,
+    Date: "12/12/2022",
+    Quantity: 3
 };
 
 // Version 1

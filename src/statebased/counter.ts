@@ -1,14 +1,14 @@
 export class Counter {
-  private count: number;
-  constructor(initial: number) {
-    this.count = initial;
-  }
+    private count: number;
+    constructor(initial: number) {
+        this.count = initial;
+    }
 
-  click() {
-    this.count++;
-  }
+    click() {
+        this.count++;
+    }
 
-  getCount() {
-    return this.count;
-  }
+    getCount() {
+        return this.count;
+    }
 }
