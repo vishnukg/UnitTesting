@@ -4,7 +4,7 @@ import { MaitreDV2, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 
-test("CanReserve returns true when there's capacity available", () => {
+test("MaitreDV2 should allow reservation if under capacity", () => {
     const capacity = 10;
     const bookedSeats = 3;
     const stubRepository = mock<IReservationRepository>();
@@ -22,7 +22,7 @@ test("CanReserve returns true when there's capacity available", () => {
     assert.equal(result, true);
 });
 
-test("CanReserve returns false when there's no capacity available", () => {
+test("MaitreDV2 should not allow reservation if over capacity", () => {
     const capacity = 10;
     const bookedSeats = 10;
     const stubRepository = mock<IReservationRepository>();
@@ -40,7 +40,7 @@ test("CanReserve returns false when there's no capacity available", () => {
     assert.equal(result, false);
 });
 
-test("Get Total Capacity returns total capacity", () => {
+test("MaitreDV2 should return total capacity when asked for", () => {
     const capacity = 10;
     const stubRepository = mock<IReservationRepository>();
     const stubLogger = mock<ILogger>();
