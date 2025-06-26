@@ -5,7 +5,7 @@ import { IReservationRepository } from "../repository";
 
 // Value based testing
 
-test("CanReserve returns true when there's capacity available", () => {
+test("MaitreD should allow reservation if under capacity", () => {
     //Arrange
     const capacity = 10;
     const bookedSeats = 3;
@@ -25,7 +25,7 @@ test("CanReserve returns true when there's capacity available", () => {
     assert.equal(result, true);
 });
 
-test("CanReserve returns false when there's no capacity available", () => {
+test("MaitreD should not allow reservation if over capacity", () => {
     //Arrange
     const capacity = 10;
     const bookedSeats = 10;
@@ -45,7 +45,7 @@ test("CanReserve returns false when there's no capacity available", () => {
     assert.equal(result, false);
 });
 
-test("Get Total Capacity returns total capacity", () => {
+test("MaitreD should return total capacity when asked for", () => {
     //Arrange
     const capacity = 10;
     const stubRepository = mock<IReservationRepository>();
