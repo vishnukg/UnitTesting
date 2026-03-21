@@ -57,7 +57,8 @@ Agenda
 - Testing Pyramid
 - The Ice Cream Cone Anti-Pattern
 - Sociable vs Solitary Tests (1/2)
-- Sociable vs Solitary Tests (2/2)
+- London vs Chicago School
+- Sociable vs Solitary Tests (3/3)
 - Stubs vs Mocks (1/2)
 - Stubs vs Mocks (2/2)
 
@@ -539,7 +540,10 @@ Sociable vs Solitary Tests (1/2)
         └ ─ ─ ─ ─ ─ ─ ─ ─ ─
 ```
 
-<!-- pause -->
+<!-- end_slide -->
+
+London vs Chicago School
+---
 
 - **London School** _(Mockist)_ — aligns with **Solitary Tests**
 
@@ -557,7 +561,7 @@ Sociable vs Solitary Tests (1/2)
 
 <!-- end_slide -->
 
-Sociable vs Solitary Tests (2/2)
+Sociable vs Solitary Tests (3/3)
 ---
 
 - **Sociable test example** — `MaitreDLogDecorator` uses a real `MaitreD` and a real `ReservationRepository`. Only the `ILogger` is a mock, because _that_ is what the test is asserting on.
