@@ -48,9 +48,9 @@ Agenda
 - Refactoring — It's Not a Task
 
 📚 **Foundations**
-- Concepts
 - Characteristics of a good Unit Test
 - Test Pain as a Signal
+- Concepts
 
 🧪 **Writing Tests**
 - The Restaurant Scenario
@@ -260,62 +260,6 @@ Refactoring — It's Not a Task
 
 <!-- end_slide -->
 
-Concepts
----
-
-> _These concepts come up repeatedly in the talk. Treat this slide as a reference — we'll see them all in action in the demo section._
-
-<!-- pause -->
-
-- **Dependency Injection**
-
-> _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
-
-<!-- pause -->
-
-- **Pure DI**
-
-> _Pure DI is Dependency Injection without a DI Container — i.e. you wire dependencies manually in code rather than using a framework like InversifyJS or tsyringe to do it for you._
-
-<!-- pause -->
-
-- **Composition Root**
-
-> _A Composition Root is a (preferably) unique location in an application where modules are composed together._
-
-<!-- pause -->
-
-- **Constructor Over-Injection**
-
-```typescript
-constructor(
-  database: IDatabase,
-  logger: ILogger,
-  authorizationManager: IAuthorizationManager,
-  cache: ICache,
-  emailService: IEmailService,
-)
-```
-
-<!-- pause -->
-
-- **Pure Functions**
-
-> _Simply, a pure function is a function that is deterministic and does not produce side effects._
-
-```typescript
-// Takes everything it needs as arguments — no dependencies, no mocks needed
-export function canAccommodate(
-    reserved: number,
-    quantity: number,
-    capacity: number
-): boolean {
-    return reserved + quantity <= capacity;
-}
-```
-
-<!-- end_slide -->
-
 Characteristics of a good Unit Test
 ---
 
@@ -377,6 +321,62 @@ Test Pain as a Signal
 <!-- pause -->
 
 > _**Integration tests are painful because of infrastructure. Unit tests are painful because of design. Only one of those is telling you to change your code.**_
+
+<!-- end_slide -->
+
+Concepts
+---
+
+> _These concepts come up repeatedly in the talk. Treat this slide as a reference — we'll see them all in action in the demo section._
+
+<!-- pause -->
+
+- **Dependency Injection**
+
+> _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
+
+<!-- pause -->
+
+- **Pure DI**
+
+> _Pure DI is Dependency Injection without a DI Container — i.e. you wire dependencies manually in code rather than using a framework like InversifyJS or tsyringe to do it for you._
+
+<!-- pause -->
+
+- **Composition Root**
+
+> _A Composition Root is a (preferably) unique location in an application where modules are composed together._
+
+<!-- pause -->
+
+- **Constructor Over-Injection**
+
+```typescript
+constructor(
+  database: IDatabase,
+  logger: ILogger,
+  authorizationManager: IAuthorizationManager,
+  cache: ICache,
+  emailService: IEmailService,
+)
+```
+
+<!-- pause -->
+
+- **Pure Functions**
+
+> _Simply, a pure function is a function that is deterministic and does not produce side effects._
+
+```typescript
+// Takes everything it needs as arguments — no dependencies, no mocks needed
+export function canAccommodate(
+    reserved: number,
+    quantity: number,
+    capacity: number
+): boolean {
+    return reserved + quantity <= capacity;
+}
+```
 
 <!-- end_slide -->
 
