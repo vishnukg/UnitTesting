@@ -4,17 +4,18 @@ import { IMaitreD, MaitreD, MaitreDLogDecorator, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
 import { ReservationRepository } from "../repository";
 
-test("getTotalCapacity invokes getTotalCapacity from the actual MaitreD object", () => {
-    //Arrange
-    const mockMaitreD = mock<IMaitreD>();
+test("getTotalCapacity returns the capacity from the wrapped IMaitreD", () => {
+    // Arrange
+    const stubMaitreD = mock<IMaitreD>();
+    stubMaitreD.getTotalCapacity.mockReturnValue(10);
     const stubLogger = mock<ILogger>();
-    const sut = new MaitreDLogDecorator(mockMaitreD, stubLogger);
+    const sut = new MaitreDLogDecorator(stubMaitreD, stubLogger);
 
-    //Act
-    sut.getTotalCapacity();
+    // Act
+    const result = sut.getTotalCapacity();
 
-    //Assert
-    expect(mockMaitreD.getTotalCapacity).toHaveBeenCalled();
+    // Assert — behaviour: does it return the right value?
+    expect(result).toBe(10);
 });
 
 test("CanReserve when called invokes logger with message", () => {

@@ -6,7 +6,7 @@ date: "2026-03-21"
 theme:
   override:
     default:
-      font_size: 2
+      font_size: 4
     slide_title:
       colors:
         foreground: "00cc00"
@@ -222,14 +222,27 @@ Concepts (2/2)
 Characteristics of a good Unit Test
 ---
 
-- It should be automated and repeatable
-- It should be easy to implement
-- It should run quickly and be consistent in its results
-- It should have full control of the unit under test
-- It should be fully isolated.
-- Avoid Setup and TearDown methods as much as you can.
-- Avoid following DRY principle in unit tests — each test should be readable and self-contained in isolation; duplication in tests aids clarity over conciseness.
-- A test should only fail for one reason.
+- **Fast & Reliable**
+
+> _Runs in milliseconds, no external state, fully isolated. Results are consistent — run it 1000 times, get the same answer._
+
+<!-- pause -->
+
+- **Readable & Self-Contained**
+
+> _Each test tells a complete story on its own. No shared setup that hides intent. Duplication is fine — clarity beats DRY in tests._
+
+<!-- pause -->
+
+- **Focused**
+
+> _One concept per test. A failing test should point to exactly one thing. If a test can fail for multiple reasons, split it._
+
+<!-- pause -->
+
+- **Trustworthy**
+
+> _A test that never fails is as useless as a test that always fails. Tests must be honest — green means working, red means broken._
 
 <!-- end_slide -->
 
