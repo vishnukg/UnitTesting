@@ -58,7 +58,11 @@ test("MaitreD should return total capacity when asked for", () => {
     assert.equal(sut, capacity);
 });
 
-// Interaction based testing
+// 🚨 Test Smell: Interaction test over value test.
+// We are asserting HOW canReserve works internally (it calls the repo)
+// rather than WHAT it returns. This is "testing structure vs behaviour".
+// If the implementation changes (e.g. caches the result), this test breaks
+// even though the behaviour is identical. Prefer the value-based tests above.
 test("CanReserve when called invokes getReservationQuantity from repository", () => {
     const capacity = 10;
     const mockRepository = mock<IReservationRepository>();

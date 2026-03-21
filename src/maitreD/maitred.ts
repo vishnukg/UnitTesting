@@ -1,5 +1,6 @@
 import { IMaitreD, Reservation } from ".";
 import { IReservationRepository } from "../repository";
+import { canAccommodate } from "./canAccommodate";
 
 export class MaitreD implements IMaitreD {
     private capacity: number;
@@ -17,10 +18,6 @@ export class MaitreD implements IMaitreD {
         const reservedSeats = this.reservationRepo.getReservationQuantity(
             reservation.Date
         );
-
-        if (reservedSeats + reservation.Quantity <= this.capacity) {
-            return true;
-        }
-        return false;
+        return canAccommodate(reservedSeats, reservation.Quantity, this.capacity);
     }
 }

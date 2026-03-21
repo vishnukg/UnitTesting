@@ -71,6 +71,11 @@ test("CanReserve when called invokes logger with message", () => {
     );
 });
 
+// 🚨 Test Smell: Mock over-use.
+// We already have a value-based test above that verifies canReserve returns
+// the correct result. Asserting that getReservationQuantity was called is
+// redundant — if it wasn't called, the value test would already fail.
+// When you are not asserting on an interaction, use a stub instead.
 test("CanReserve when called invokes getReservationQuantity from repository", () => {
     const capacity = 10;
     const mockRepository = mock<IReservationRepository>();
