@@ -40,31 +40,164 @@ Agenda
 ---
 
 🎯 **The Why**
+- What is a Unit Test?
+- SUT — System Under Test
+- Arrange-Act-Assert
+- Types of Assertion
 - Why Unit Tests?
-- The Restaurant Scenario
+- Refactoring — It's Not a Task
 
 📚 **Foundations**
-- Concepts (1/2) — DI & Pure Functions
-- Concepts (2/2) — Test Types
+- Concepts
 - Characteristics of a good Unit Test
+- Test Pain as a Signal
 
 🧪 **Writing Tests**
+- The Restaurant Scenario
 - Testing Pyramid
 - The Ice Cream Cone Anti-Pattern
 - Sociable vs Solitary Tests (1/2)
 - Sociable vs Solitary Tests (2/2)
-- Stubs vs Mocks
+- Stubs vs Mocks (1/2)
+- Stubs vs Mocks (2/2)
 
 🚨 **When It Goes Wrong**
 - Test Smells
 - Clean Architecture & Testing
 
 🔧 **Solutions**
-- From Smell to Solution: V1 → V2
+- Decorator Pattern
+- The Clean Core and the Smell: V1 → V2
 - From Smell to Solution: V3 → V4
 - The Wiring — Composition Root
-- Decorator Pattern
 - Aggregate Service Pattern
+- Summary
+- Bibliography
+
+<!-- end_slide -->
+
+What is a Unit Test?
+---
+
+> _A unit test is a piece of code that invokes another piece of code and checks the correctness of some assumptions afterward. If the assumptions turn out to be wrong, the unit test has failed._
+
+<!-- pause -->
+
+- **A unit** is the smallest piece of code worth verifying in isolation
+  - a function, a class method, a pure expression — anything with a clear input and a verifiable output
+  - not a whole service, not a full flow — just one behaviour at a time
+
+<!-- pause -->
+
+- **Automated** — runs without human interaction, gives a pass/fail result every time
+
+<!-- pause -->
+
+- **Isolated** — tests one thing at a time; when it fails, you know exactly what broke
+
+<!-- pause -->
+
+- **Three types of assertion** — value, state, and interaction _(covered on the next slide)_
+
+<!-- end_slide -->
+
+SUT — System Under Test
+---
+
+- **SUT** stands for _System Under Test_ — the thing you are currently testing
+
+<!-- pause -->
+
+> _Naming it `sut` in your test makes it immediately clear what is being exercised — and what everything else (stubs, mocks, input data) is just there to support it._
+
+<!-- pause -->
+
+```typescript
+const repository = createTestDouble<IRepository>();  // supporting (test double)
+const logger     = createTestDouble<ILogger>();       // supporting (test double)
+
+const sut = new OrderService(repository, logger); // ← this is what we're testing
+```
+
+> _We'll cover test doubles (stubs, mocks, fakes) in detail shortly._
+
+<!-- pause -->
+
+> _If you find yourself unsure what the `sut` is in a test, that's a smell — the test is probably doing too much._
+
+<!-- end_slide -->
+
+Arrange-Act-Assert
+---
+
+> _Every unit test should follow three phases:_
+
+<!-- pause -->
+
+- **Arrange** — set up the SUT, its dependencies, and any input data
+
+- **Act** — call the single behaviour you are testing
+
+- **Assert** — verify the outcome
+
+<!-- pause -->
+
+```typescript
+test("add returns the sum of two numbers", () => {
+    // Arrange
+    const sut = new Calculator();
+
+    // Act
+    const result = sut.add(2, 3);
+
+    // Assert
+    assert.equal(result, 5);
+});
+```
+
+<!-- pause -->
+
+> _One test, one Act. If you're calling Act more than once, you're testing more than one thing._
+
+<!-- end_slide -->
+
+Types of Assertion
+---
+
+- **Value** — assert on what the function _returns_. No object, no state, just a return value.
+
+```typescript
+// Pure function — give it inputs, check the output. Nothing to fake.
+const result = add(2, 3);
+assert.equal(result, 5);
+```
+
+<!-- pause -->
+
+- **State** — call a method that changes the object, then query it to see if the change happened.
+
+```typescript
+const sut = new Counter(0);
+sut.click(); // changes internal state
+
+const result = sut.getCount();
+assert.equal(result, 1); // verify the new state
+```
+
+<!-- pause -->
+
+- **Interaction** — assert that the SUT _called_ a collaborator in the expected way.
+
+```typescript
+const mockEmailService = mock<IEmailService>();
+sut.placeOrder(order);
+
+expect(mockEmailService.send).toHaveBeenCalledWith(order.customerEmail);
+```
+
+<!-- pause -->
+
+> _Prefer **value** over **state** over **interaction**. Interaction tests are the most brittle — they assert on HOW something works, not WHAT it does. They break when you refactor even if the behaviour is unchanged._
 
 <!-- end_slide -->
 
@@ -92,6 +225,157 @@ Why Unit Tests?
 - **Forces better design**
 
 > _Code that is hard to test is usually hard to understand and maintain. Unit tests surface design problems early — tight coupling, too many responsibilities, hidden dependencies._
+
+<!-- end_slide -->
+
+Refactoring — It's Not a Task
+---
+
+> _Refactoring is changing the internal structure of code without changing its observable behaviour._
+
+<!-- pause -->
+
+- **It is not a story, ticket, or sprint item**
+
+> _Refactoring is something you do continuously — every time you add a feature, fix a bug, or read code you don't fully understand. It is part of the job, not a separate phase._
+
+<!-- pause -->
+
+- **The Boy Scout Rule**
+
+> _"Always leave the code better than you found it."_ — Robert C. Martin (Uncle Bob)
+>
+> _You don't have to refactor everything. Just leave whatever you touch a little cleaner: rename a confusing variable, extract a function, remove a dead comment. Small improvements compound over time._
+
+<!-- pause -->
+
+- **Tests are the safety net**
+
+> _Without tests, refactoring is dangerous. You might clean up the code but silently break behaviour. A solid unit test suite means you can refactor aggressively and confidently — the tests will tell you immediately if something breaks._
+
+<!-- pause -->
+
+> _This is why **confidence to refactor** is one of the biggest returns on investment from unit testing._
+
+<!-- end_slide -->
+
+Concepts
+---
+
+> _These concepts come up repeatedly in the talk. Treat this slide as a reference — we'll see them all in action in the demo section._
+
+<!-- pause -->
+
+- **Dependency Injection**
+
+> _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
+
+<!-- pause -->
+
+- **Pure DI**
+
+> _Pure DI is Dependency Injection without a DI Container — i.e. you wire dependencies manually in code rather than using a framework like InversifyJS or tsyringe to do it for you._
+
+<!-- pause -->
+
+- **Composition Root**
+
+> _A Composition Root is a (preferably) unique location in an application where modules are composed together._
+
+<!-- pause -->
+
+- **Constructor Over-Injection**
+
+```typescript
+constructor(
+  database: IDatabase,
+  logger: ILogger,
+  authorizationManager: IAuthorizationManager,
+  cache: ICache,
+  emailService: IEmailService,
+)
+```
+
+<!-- pause -->
+
+- **Pure Functions**
+
+> _Simply, a pure function is a function that is deterministic and does not produce side effects._
+
+```typescript
+// Takes everything it needs as arguments — no dependencies, no mocks needed
+export function canAccommodate(
+    reserved: number,
+    quantity: number,
+    capacity: number
+): boolean {
+    return reserved + quantity <= capacity;
+}
+```
+
+<!-- end_slide -->
+
+Characteristics of a good Unit Test
+---
+
+- **Fast & Reliable**
+
+> _Runs in milliseconds, no external state, fully isolated. Results are consistent — run it 1000 times, get the same answer._
+
+<!-- pause -->
+
+- **Readable & Self-Contained**
+
+> _Each test tells a complete story on its own. No shared setup that hides intent. Duplication is fine — clarity beats DRY in tests._
+
+<!-- pause -->
+
+- **Focused**
+
+> _One concept per test. A failing test should point to exactly one thing. If a test can fail for multiple reasons, split it._
+
+<!-- pause -->
+
+- **Trustworthy**
+
+> _A test that never fails is as useless as a test that always fails. Tests must be honest — green means working, red means broken._
+
+<!-- pause -->
+
+- **Hard to write? Listen to the test**
+
+> _If a test is painful to set up, requires many mocks, or breaks on every refactor — that's not a test problem. That's your code telling you its design needs work._
+
+<!-- pause -->
+
+<!-- end_slide -->
+
+Test Pain as a Signal
+---
+
+- **Not all test pain is equal — learn to tell them apart**
+
+<!-- pause -->
+
+- **Integration / E2E pain = environment pain**
+
+> _Spinning up databases, containers, services. Slow feedback, flaky networks, seed data. The pain comes from outside the code._
+
+<!-- pause -->
+
+- **Unit test pain = design pain**
+
+> _Hard to construct, too many mocks, breaks on every refactor. The pain comes from inside the code — tight coupling, too many responsibilities._
+
+<!-- pause -->
+
+- **Integration tests are slower to diagnose**
+
+> _When they fail, you know something is broken somewhere across many layers, but not exactly where. Unit tests point to the exact unit that broke._
+
+<!-- pause -->
+
+> _**Integration tests are painful because of infrastructure. Unit tests are painful because of design. Only one of those is telling you to change your code.**_
 
 <!-- end_slide -->
 
@@ -133,116 +417,6 @@ The Restaurant Scenario
 <!-- pause -->
 
 > 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/reservation.ts` · `src/maitreD/ireservationrepository.ts`
-
-<!-- end_slide -->
-
-Concepts (1/2)
----
-
-- **Dependency Injection**
-
-> _When you go and get things out of the refrigerator for yourself, you can cause problems. You might leave the door open, you might get something Mommy or Daddy doesn't want you to have. You might even be looking for something we don't even have or which has expired. What you should be doing is stating a need, "I need something to drink with lunch," and then we will make sure you have something when you sit down to eat._
-
-<!-- pause -->
-
-- **Pure DI**
-
-> _Pure DI is Dependency Injection without a DI Container_
-
-<!-- pause -->
-
-- **Composition Root**
-
-> _A Composition Root is a (preferably) unique location in an application where modules are composed together._
-
-<!-- pause -->
-
-- **Constructor Over-Injection**
-
-```typescript
-constructor(
-  capacity: number,
-  reservationRepo: IReservationRepository,
-  logger: ILogger,
-  authorizationManager: IAuthorizationManager,
-  cache: ICache,
-)
-```
-
-<!-- pause -->
-
-- **Pure Functions**
-
-> _Simply, a pure function is a function that is deterministic and does not produce side effects._
-
-```typescript
-// Takes everything it needs as arguments — no dependencies, no mocks needed
-export function canAccommodate(
-    reserved: number,
-    quantity: number,
-    capacity: number
-): boolean {
-    return reserved + quantity <= capacity;
-}
-```
-
-> 💻 **nvim** `src/maitreD/canAccommodate.ts` · `src/maitreD/canAccommodate.test.ts`
-
-<!-- end_slide -->
-
-Concepts (2/2)
----
-
-<!-- pause -->
-
-- **Unit Test**
-
-> _A unit test is a piece of a code (usually a method) that invokes another piece of code and checks the correctness of some assumptions afterward. If the assumptions turn out to be wrong, the unit test has failed. A unit is a method or function._
-
-<!-- pause -->
-
-- **State based testing**
-
-> _State-based testing (also called state verification) determines whether the exercised method worked correctly by examining the changed behavior of the system under test and its collaborators (dependencies) after the method is exercised. It checks for noticeable behavior changes in the system under test, after changing its state._
-
-<!-- pause -->
-
-- **Value based testing**
-
-> _Value-based testing checks the value returned from a function._
-
-<!-- pause -->
-
-- **Interaction testing**
-
-> _Interaction testing is testing how an object sends messages (calls methods) to other objects. You use interaction testing when calling another object is the end result of a specific unit of work._
-
-<!-- end_slide -->
-
-Characteristics of a good Unit Test
----
-
-- **Fast & Reliable**
-
-> _Runs in milliseconds, no external state, fully isolated. Results are consistent — run it 1000 times, get the same answer._
-
-<!-- pause -->
-
-- **Readable & Self-Contained**
-
-> _Each test tells a complete story on its own. No shared setup that hides intent. Duplication is fine — clarity beats DRY in tests._
-
-<!-- pause -->
-
-- **Focused**
-
-> _One concept per test. A failing test should point to exactly one thing. If a test can fail for multiple reasons, split it._
-
-<!-- pause -->
-
-- **Trustworthy**
-
-> _A test that never fails is as useless as a test that always fails. Tests must be honest — green means working, red means broken._
 
 <!-- end_slide -->
 
@@ -365,6 +539,22 @@ Sociable vs Solitary Tests (1/2)
         └ ─ ─ ─ ─ ─ ─ ─ ─ ─
 ```
 
+<!-- pause -->
+
+- **London School** _(Mockist)_ — aligns with **Solitary Tests**
+
+> _Test each class in complete isolation. Mock all collaborators. Drive design top-down from the outside in. Favours interaction testing._
+
+<!-- pause -->
+
+- **Chicago / Detroit School** _(Classicist)_ — aligns with **Sociable Tests**
+
+> _Test units of behaviour, not units of code. Use real collaborators where possible. Only mock at the system boundary (database, network, filesystem). Favours value and state testing._
+
+<!-- pause -->
+
+> _Neither school is universally right. Chicago gives you tests that survive refactoring. London gives you tests that expose design problems early. Use both — deliberately._
+
 <!-- end_slide -->
 
 Sociable vs Solitary Tests (2/2)
@@ -394,26 +584,39 @@ test("CanReserve invokes logger with message", () => {
 
 <!-- end_slide -->
 
-Stubs vs Mocks
+Stubs vs Mocks (1/2)
 ---
 
 - **Fakes**
 
-> _A fake is a generic term that can be used to describe either a stub or a mock object (handwritten or otherwise), because they both look like the real object. Whether a fake is a stub or a mock depends on how it’s used in the current test. If it’s used to check an interaction (asserted against), it’s a mock object. Otherwise, it’s a stub._
+> _A working but simplified implementation — e.g. an in-memory database instead of a real one. The distinction between stub and mock depends on how it's used in the test._
 
 <!-- pause -->
 
 - **Stubs**
 
-> _A stub is a controllable replacement for an existing dependency (or collaborator) in the system. By using a stub, you can test your code without dealing with the dependency directly._
+> _A controllable replacement that returns preset values. Used to feed indirect inputs into the SUT. You never assert on a stub._
 
 <!-- pause -->
 
 - **Mocks**
 
-> _A mock object is a fake object in the system that decides whether the unit test has passed or failed. It does so by verifying whether the object under test called the fake object as expected. There’s usually no more than one mock per test._
+> _A fake that records interactions and decides whether the test passes or fails. You assert on a mock. There's usually no more than one mock per test._
 
 <!-- pause -->
+
+- **Spies**
+
+> _A spy wraps a real object and records calls to it without replacing its behaviour. Useful when you want to verify an interaction happened but still want the real implementation to run._
+
+<!-- pause -->
+
+> _**The rule:** asserting on it → **mock**. Feeding it data → **stub**. Full working implementation → **fake**. Wraps a real object → **spy**._
+
+<!-- end_slide -->
+
+Stubs vs Mocks (2/2)
+---
 
 ```
     ┏━━━━━━━━━━━━┓                  ┏━━━━━━━━━━━━━┓
@@ -474,7 +677,7 @@ Test Smells
 
 - **How to deodorize test smells**
 
-> _Prefer value-based and state-based assertions over interaction testing. Introduce a Facade or Aggregate Service to reduce Constructor Over-Injection. Delete tests that duplicate coverage without adding signal._
+> _Prefer value-based and state-based assertions over interaction testing. Introduce a Facade or Aggregate Service to reduce Constructor Over-Injection _(covered in the Aggregate Service Pattern slide)_. Delete tests that duplicate coverage without adding signal._
 
 > 💻 **nvim** `src/maitreD/maitred.test.ts` · `src/maitreD/maitredV2.test.ts`
 
@@ -517,122 +720,6 @@ Clean Architecture & Testing
 - **Why it makes testing easier**
 
 > _The inner core has zero external dependencies — unit test it directly, no mocks needed. Driven adapters sit behind interfaces — stub them in unit tests, or use the real implementation in integration tests. E2E tests only need to exercise the critical path from a driving adapter all the way through._
-
-<!-- end_slide -->
-
-From Smell to Solution: V1 → V2
----
-
-> _Our `MaitreD` went through four versions. Each version illustrates a concept from this talk._
-
-<!-- pause -->
-
-- **V1 — Pure function extracted, clean testable core**
-
-```typescript
-export class MaitreD implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-<!-- pause -->
-
-- **V2 — Constructor Over-Injection smell introduced**
-
-```typescript
-export class MaitreDV2 implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository,
-        private logger: ILogger  // ← cross-cutting concern crept in
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        this.logger.Log("Checking if the reservation can be made");
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-<!-- end_slide -->
-
-From Smell to Solution: V3 → V4
----
-
-<!-- pause -->
-
-- **V3 — Class-based Decorator removes the smell**
-
-```typescript
-export class MaitreDLogDecorator implements IMaitreD {
-    constructor(
-        private maitreD: IMaitreD,  // wraps any IMaitreD
-        private logger: ILogger
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        this.logger.Log("Checking if the reservation can be made");
-        return this.maitreD.canReserve(reservation); // delegates
-    }
-}
-```
-
-<!-- pause -->
-
-- **V4 — TypeScript method decorator, no wrapper class needed**
-
-```typescript
-const logger = new ConsoleLogger();
-
-export class MaitreDWithTsDecorator implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository
-        // no ILogger — decorator handles it
-    ) {}
-
-    @Log(logger, "Checking if the reservation can be made")
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-<!-- end_slide -->
-
-The Wiring — Composition Root
----
-
-- **All versions side by side**
-
-```typescript
-// V1 — no logging
-const maitreDV1 = new MaitreD(10, new ReservationRepository());
-
-// V3 — class-based Decorator, logger fully injectable
-const maitreDV3 = new MaitreDLogDecorator(
-    new MaitreD(10, new ReservationRepository()),
-    new ConsoleLogger()
-);
-
-// V4 — TypeScript decorator, logger bound at definition time
-const maitreDV4 = new MaitreDWithTsDecorator(10, new ReservationRepository());
-```
-
-> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts` · `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts` · `src/index.ts`
 
 <!-- end_slide -->
 
@@ -714,6 +801,120 @@ export class MaitreDWithTsDecorator implements IMaitreD {
 
 <!-- end_slide -->
 
+The Clean Core and the Smell: V1 → V2
+---
+
+> _Our `MaitreD` went through four versions. Each version illustrates a concept from this talk._
+
+<!-- pause -->
+
+- **V1 — Pure function extracted, clean testable core**
+
+```typescript
+export class MaitreD implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- pause -->
+
+- **V2 — Constructor Over-Injection smell introduced**
+
+```typescript
+export class MaitreDV2 implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository,
+        private logger: ILogger  // ← cross-cutting concern crept in
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        this.logger.Log("Checking if the reservation can be made");
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- end_slide -->
+
+From Smell to Solution: V3 → V4
+---
+
+- **V3 — Class-based Decorator removes the smell**
+
+```typescript
+export class MaitreDLogDecorator implements IMaitreD {
+    constructor(
+        private maitreD: IMaitreD,  // wraps any IMaitreD
+        private logger: ILogger
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        this.logger.Log("Checking if the reservation can be made");
+        return this.maitreD.canReserve(reservation); // delegates
+    }
+}
+```
+
+<!-- pause -->
+
+- **V4 — TypeScript method decorator, no wrapper class needed**
+
+```typescript
+const logger = new ConsoleLogger();
+
+export class MaitreDWithTsDecorator implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+        // no ILogger — decorator handles it
+    ) {}
+
+    @Log(logger, "Checking if the reservation can be made")
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- end_slide -->
+
+The Wiring — Composition Root
+---
+
+- **All versions side by side**
+
+```typescript
+// V1 — no logging
+const maitreDV1 = new MaitreD(10, new ReservationRepository());
+
+// V3 — class-based Decorator, logger fully injectable
+const maitreDV3 = new MaitreDLogDecorator(
+    new MaitreD(10, new ReservationRepository()),
+    new ConsoleLogger()
+);
+
+// V4 — TypeScript decorator, logger bound at definition time
+const maitreDV4 = new MaitreDWithTsDecorator(10, new ReservationRepository());
+```
+
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts` · `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts` · `src/index.ts`
+
+<!-- end_slide -->
+
 Aggregate Service Pattern (1/2)
 ---
 
@@ -734,8 +935,8 @@ constructor(
     capacity: number,
     reservationRepo: IReservationRepository,
     authorizationManager: IAuthorizationManager,
-    cache: ICache,
-    logger: ILogger             // ← also a cross-cutting concern
+    cache: ICache
+    // logging is a cross-cutting concern — handled by the Decorator, not here
 )
 ```
 
@@ -781,6 +982,37 @@ const maitreD = new MaitreDLogDecorator(
 > _The context object is a plain data structure — stub it with a single object literal in tests. The Aggregate class has one constructor param, so tests are trivial to set up. The Decorator wraps on top without polluting either._
 
 > 💻 **nvim** `src/maitreD/IMaitreDContext.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
+
+<!-- end_slide -->
+
+Summary
+---
+
+> _Test smells are not just annoyances — they are signals. Every painful test is pointing at a design problem in your code._
+
+<!-- pause -->
+
+- **Refactor continuously, not occasionally** — leave the code better than you found it (Boy Scout Rule). Tests give you the safety net to do this without fear.
+
+<!-- pause -->
+
+- **Extract pure functions** — logic with no dependencies is trivially testable and never needs mocks
+
+<!-- pause -->
+
+- **Keep cross-cutting concerns out of constructors** — use the Decorator pattern to wrap behaviour without polluting your domain classes
+
+<!-- pause -->
+
+- **Group domain dependencies** — use the Aggregate Service pattern when constructor parameters grow, giving the group a meaningful name
+
+<!-- pause -->
+
+- **Wire it all together at the Composition Root** — one place, all dependencies explicit, nothing hidden
+
+<!-- pause -->
+
+> _When your tests are easy to write, fast to run, and clear to read — your architecture is doing its job._
 
 <!-- end_slide -->
 
