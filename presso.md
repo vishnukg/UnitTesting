@@ -1,5 +1,6 @@
 ---
-title: Thoughts on Unit Testing
+title: "Test Smell Driven Design"
+sub_title: "Let your tests tell you how to improve your code"
 author: Vishnu Ganesan
 date: "2026-03-21"
 theme:
@@ -9,6 +10,13 @@ theme:
     slide_title:
       colors:
         foreground: "00cc00"
+    intro_slide:
+      title:
+        colors:
+          foreground: "00cc00"
+      subtitle:
+        colors:
+          foreground: "ffffff"
     block_quote:
       prefix: "     "
       colors:
@@ -31,21 +39,104 @@ theme:
 Agenda
 ---
 
-- Concepts
+🎯 **The Why**
+- Why Unit Tests?
 - The Restaurant Scenario
+
+📚 **Foundations**
+- Concepts (1/2) — DI & Pure Functions
+- Concepts (2/2) — Test Types
+- Characteristics of a good Unit Test
+
+🧪 **Writing Tests**
 - Testing Pyramid
 - The Ice Cream Cone Anti-Pattern
-- Clean Architecture & Testing
-- Sociable vs Solitary Tests
+- Sociable vs Solitary Tests (1/2)
+- Sociable vs Solitary Tests (2/2)
 - Stubs vs Mocks
-- Characteristics of a good Unit Test
+
+🚨 **When It Goes Wrong**
 - Test Smells
-- From Smell to Solution: V1 → V3
-- Bibliography
+- Clean Architecture & Testing
+
+🔧 **Solutions**
+- From Smell to Solution: V1 → V2
+- From Smell to Solution: V3 → V4
+- The Wiring — Composition Root
+- Decorator Pattern
+- Aggregate Service Pattern
 
 <!-- end_slide -->
 
-Concepts
+Why Unit Tests?
+---
+
+- **Fast feedback loop**
+
+> _Unit tests run in milliseconds. They catch regressions the moment you break something — not after a 10-minute build, not after a QA cycle._
+
+<!-- pause -->
+
+- **Confidence to refactor**
+
+> _Without tests, changing code is guesswork. With a solid unit test suite, you can refactor aggressively and trust the tests to catch anything you break._
+
+<!-- pause -->
+
+- **Living documentation**
+
+> _A well-named test describes exactly what the system does and under what conditions. It never goes stale — if it did, it would fail._
+
+<!-- pause -->
+
+- **Forces better design**
+
+> _Code that is hard to test is usually hard to understand and maintain. Unit tests surface design problems early — tight coupling, too many responsibilities, hidden dependencies._
+
+<!-- end_slide -->
+
+The Restaurant Scenario
+---
+
+> _All code examples in this talk are built around a restaurant reservation system. Here's the domain._
+
+<!-- pause -->
+
+- **The Maître D'** (`MaitreD`)
+
+> _The Maître D' is responsible for deciding whether a reservation can be accepted. If the number of already-booked seats plus the requested quantity does not exceed the restaurant's capacity, the reservation is allowed._
+
+<!-- pause -->
+
+- **The Reservation** (`Reservation`)
+
+> _A reservation has an id, a date, and a quantity (number of seats requested)._
+
+<!-- pause -->
+
+- **The Repository** (`IReservationRepository`)
+
+> _The repository is an external dependency — it fetches how many seats are already booked for a given date. In production this would be a database call. In tests, we replace it with a stub._
+
+<!-- pause -->
+
+```
+                    ┌───────────────────────────┐
+  canReserve()      │          MaitreD          │
+ ────────────────▶  │                           │
+                    │  reserved + quantity      │──▶ IReservationRepository
+  true / false      │       <= capacity ?       │       getReservationQuantity()
+ ◀────────────────  │                           │
+                    └───────────────────────────┘
+```
+
+<!-- pause -->
+
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/reservation.ts` · `src/maitreD/ireservationrepository.ts`
+
+<!-- end_slide -->
+
+Concepts (1/2)
 ---
 
 - **Dependency Injection**
@@ -95,6 +186,13 @@ export function canAccommodate(
 }
 ```
 
+> 💻 **nvim** `src/maitreD/canAccommodate.ts` · `src/maitreD/canAccommodate.test.ts`
+
+<!-- end_slide -->
+
+Concepts (2/2)
+---
+
 <!-- pause -->
 
 - **Unit Test**
@@ -121,40 +219,17 @@ export function canAccommodate(
 
 <!-- end_slide -->
 
-The Restaurant Scenario
+Characteristics of a good Unit Test
 ---
 
-> _All code examples in this talk are built around a restaurant reservation system. Here's the domain._
-
-<!-- pause -->
-
-- **The Maître D'** (`MaitreD`)
-
-> _The Maître D' is responsible for deciding whether a reservation can be accepted. If the number of already-booked seats plus the requested quantity does not exceed the restaurant's capacity, the reservation is allowed._
-
-<!-- pause -->
-
-- **The Reservation** (`Reservation`)
-
-> _A reservation has an id, a date, and a quantity (number of seats requested)._
-
-<!-- pause -->
-
-- **The Repository** (`IReservationRepository`)
-
-> _The repository is an external dependency — it fetches how many seats are already booked for a given date. In production this would be a database call. In tests, we replace it with a stub._
-
-<!-- pause -->
-
-```
-                    ┌───────────────────────────┐
-  canReserve()      │          MaitreD          │
- ────────────────▶  │                           │
-                    │  reserved + quantity      │──▶ IReservationRepository
-  true / false      │       <= capacity ?       │       getReservationQuantity()
- ◀────────────────  │                           │
-                    └───────────────────────────┘
-```
+- It should be automated and repeatable
+- It should be easy to implement
+- It should run quickly and be consistent in its results
+- It should have full control of the unit under test
+- It should be fully isolated.
+- Avoid Setup and TearDown methods as much as you can.
+- Avoid following DRY principle in unit tests — each test should be readable and self-contained in isolation; duplication in tests aids clarity over conciseness.
+- A test should only fail for one reason.
 
 <!-- end_slide -->
 
@@ -232,47 +307,7 @@ The Ice Cream Cone Anti-Pattern
 
 <!-- end_slide -->
 
-Clean Architecture & Testing
----
-
-- **The Dependency Rule**
-
-> _Source code dependencies can only point inwards. Inner layers know nothing about outer layers. This makes the inner core independently testable — no framework, no database, no web server required._
-
-<!-- pause -->
-
-- **The Four Layers**
-
-> _**Entities** — enterprise-wide business rules. The most stable layer, unaffected by any external change._
-> _**Use Cases** — application-specific logic that orchestrates entities. Changes only when business requirements change._
-> _**Interface Adapters** — convert data between the format convenient for use cases and the format needed by external systems (MVC controllers, presenters, repository implementations)._
-> _**Frameworks & Drivers** — the outermost layer: databases, web frameworks, UI. All the details live here._
-
-<!-- pause -->
-
-![](CleanArchitecture.jpg)
-
-<!-- pause -->
-
-- **Driving vs Driven Adapters**
-
-> _Driving adapters (controllers, CLI) call into the application through a port. Driven adapters (repositories, queues, email) are called by the application through a port. Ports are interfaces — natural seams for stubs and mocks._
-
-<!-- pause -->
-
-- **Crossing boundaries safely**
-
-> _The Dependency Inversion Principle lets you cross boundaries without violating the dependency rule. Inner layers define interfaces (ports); outer layers implement them. Flow of control can go outward, but source code dependencies always point inward._
-
-<!-- pause -->
-
-- **Why it makes testing easier**
-
-> _The inner core has zero external dependencies — unit test it directly, no mocks needed. Driven adapters sit behind interfaces — stub them in unit tests, or use the real implementation in integration tests. E2E tests only need to exercise the critical path from a driving adapter all the way through._
-
-<!-- end_slide -->
-
-Sociable vs Solitary Tests
+Sociable vs Solitary Tests (1/2)
 ---
 
 - **Sociable Tests**
@@ -317,7 +352,10 @@ Sociable vs Solitary Tests
         └ ─ ─ ─ ─ ─ ─ ─ ─ ─
 ```
 
-<!-- pause -->
+<!-- end_slide -->
+
+Sociable vs Solitary Tests (2/2)
+---
 
 - **Sociable test example** — `MaitreDLogDecorator` uses a real `MaitreD` and a real `ReservationRepository`. Only the `ILogger` is a mock, because _that_ is what the test is asserting on.
 
@@ -338,6 +376,8 @@ test("CanReserve invokes logger with message", () => {
     );
 });
 ```
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.test.ts`
 
 <!-- end_slide -->
 
@@ -394,19 +434,7 @@ Stubs vs Mocks
                                     ┗━━━━━━━━━━━━━┛
 ```
 
-<!-- end_slide -->
-
-Characteristics of a good Unit Test
----
-
-- It should be automated and repeatable
-- It should be easy to implement
-- It should run quickly and be consistent in its results
-- It should have full control of the unit under test
-- It should be fully isolated.
-- Avoid Setup and TearDown methods as much as you can.
-- Avoid following DRY principle in unit tests — each test should be readable and self-contained in isolation; duplication in tests aids clarity over conciseness.
-- A test should only fail for one reason.
+> 💻 **nvim** `src/maitreD/maitred.test.ts` · `src/maitreD/maitredV2.test.ts`
 
 <!-- end_slide -->
 
@@ -435,12 +463,54 @@ Test Smells
 
 > _Prefer value-based and state-based assertions over interaction testing. Introduce a Facade or Aggregate Service to reduce Constructor Over-Injection. Delete tests that duplicate coverage without adding signal._
 
+> 💻 **nvim** `src/maitreD/maitred.test.ts` · `src/maitreD/maitredV2.test.ts`
+
 <!-- end_slide -->
 
-From Smell to Solution: V1 → V3
+Clean Architecture & Testing
 ---
 
-> _Our `MaitreD` went through three versions. Each version illustrates a concept from this talk._
+- **The Dependency Rule**
+
+> _Source code dependencies can only point inwards. Inner layers know nothing about outer layers. This makes the inner core independently testable — no framework, no database, no web server required._
+
+<!-- pause -->
+
+- **The Four Layers**
+
+> _**Entities** — enterprise-wide business rules. The most stable layer, unaffected by any external change._
+> _**Use Cases** — application-specific logic that orchestrates entities. Changes only when business requirements change._
+> _**Interface Adapters** — convert data between the format convenient for use cases and the format needed by external systems (MVC controllers, presenters, repository implementations)._
+> _**Frameworks & Drivers** — the outermost layer: databases, web frameworks, UI. All the details live here._
+
+<!-- pause -->
+
+![](CleanArchitecture.jpg)
+
+<!-- pause -->
+
+- **Driving vs Driven Adapters**
+
+> _Driving adapters (controllers, CLI) call into the application through a port. Driven adapters (repositories, queues, email) are called by the application through a port. Ports are interfaces — natural seams for stubs and mocks._
+
+<!-- pause -->
+
+- **Crossing boundaries safely**
+
+> _The Dependency Inversion Principle lets you cross boundaries without violating the dependency rule. Inner layers define interfaces (ports); outer layers implement them. Flow of control can go outward, but source code dependencies always point inward._
+
+<!-- pause -->
+
+- **Why it makes testing easier**
+
+> _The inner core has zero external dependencies — unit test it directly, no mocks needed. Driven adapters sit behind interfaces — stub them in unit tests, or use the real implementation in integration tests. E2E tests only need to exercise the critical path from a driving adapter all the way through._
+
+<!-- end_slide -->
+
+From Smell to Solution: V1 → V2
+---
+
+> _Our `MaitreD` went through four versions. Each version illustrates a concept from this talk._
 
 <!-- pause -->
 
@@ -482,9 +552,14 @@ export class MaitreDV2 implements IMaitreD {
 }
 ```
 
+<!-- end_slide -->
+
+From Smell to Solution: V3 → V4
+---
+
 <!-- pause -->
 
-- **V3 — Decorator pattern removes the smell**
+- **V3 — Class-based Decorator removes the smell**
 
 ```typescript
 export class MaitreDLogDecorator implements IMaitreD {
@@ -502,18 +577,197 @@ export class MaitreDLogDecorator implements IMaitreD {
 
 <!-- pause -->
 
-- **The wiring — Composition Root**
+- **V4 — TypeScript method decorator, no wrapper class needed**
+
+```typescript
+const logger = new ConsoleLogger();
+
+export class MaitreDWithTsDecorator implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+        // no ILogger — decorator handles it
+    ) {}
+
+    @Log(logger, "Checking if the reservation can be made")
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- end_slide -->
+
+The Wiring — Composition Root
+---
+
+- **All versions side by side**
 
 ```typescript
 // V1 — no logging
 const maitreDV1 = new MaitreD(10, new ReservationRepository());
 
-// V3 — logging added without touching MaitreD
+// V3 — class-based Decorator, logger fully injectable
 const maitreDV3 = new MaitreDLogDecorator(
     new MaitreD(10, new ReservationRepository()),
     new ConsoleLogger()
 );
+
+// V4 — TypeScript decorator, logger bound at definition time
+const maitreDV4 = new MaitreDWithTsDecorator(10, new ReservationRepository());
 ```
+
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts` · `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts` · `src/index.ts`
+
+<!-- end_slide -->
+
+Decorator Pattern
+---
+
+> _The Decorator pattern attaches additional behaviour to an object by wrapping it inside another object that shares the same interface. The wrapper delegates to the real object for the core work, and adds its own behaviour around it._
+
+<!-- pause -->
+
+```
+  <<interface>>
+   IMaitreD
+  ┌──────────────┐
+  │ canReserve() │
+  │ getCapacity()│
+  └──────┬───────┘
+         │ implements
+         │
+    ┌────┴────────────────────────────────┐
+    │                                     │
+    ▼                                     ▼
+┌──────────────┐              ┌───────────────────────────┐
+│   MaitreD    │              │   MaitreDLogDecorator     │
+│  (real impl) │◀─ wraps ─────│                           │
+│              │              │  - delegates canReserve() │
+└──────────────┘              │  - adds logging around it │
+                              └───────────────────────────┘
+```
+
+<!-- pause -->
+
+- **Why it keeps things testable**
+
+> _The real `MaitreD` stays free of cross-cutting concerns — unit test it with no noise. The decorator can be tested in isolation by wrapping a mock. Neither class knows about the other's internals._
+
+<!-- pause -->
+
+- **The rule**
+
+> _If you find yourself adding a new dependency to a constructor just to handle logging, caching, or authorisation — stop. That is a cross-cutting concern. Wrap it with a Decorator instead._
+
+<!-- pause -->
+
+- **When NOT to use it**
+
+> _When the behaviour is core domain logic, not a cross-cutting concern. If removing the decorator would break the business rule, it belongs inside the class, not outside it._
+
+<!-- pause -->
+
+- **TypeScript method decorator — an alternative**
+
+> _TypeScript decorators annotate a method directly with `@Log(...)`. No wrapper class needed. The logger is bound at class definition time, so the constructor stays clean — only domain deps._
+
+```typescript
+const logger = new ConsoleLogger(); // bound at definition time
+
+export class MaitreDWithTsDecorator implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+        // no ILogger here — the decorator handles it
+    ) {}
+
+    @Log(logger, "Checking if the reservation can be made")
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- pause -->
+
+- **The trade-off**
+
+> _The class-based Decorator injects `ILogger` via the constructor — fully mockable in tests. The TypeScript `@decorator` binds the logger at class definition time — easier to read, but the logger is harder to swap in tests. For production code, TypeScript decorators are elegant. For strict unit testing of the logging behaviour itself, the class-based Decorator wins._
+
+<!-- end_slide -->
+
+Aggregate Service Pattern (1/2)
+---
+
+> _The Aggregate Service (also called Facade) groups a set of related fine-grained dependencies into a single coarse-grained dependency. It gives the group a meaningful name that belongs to the domain._
+
+<!-- pause -->
+
+- **When to use it**
+
+> _When a class has many constructor parameters that all belong to the same concept — not cross-cutting concerns, but domain-level dependencies that naturally go together._
+
+<!-- pause -->
+
+- **The problem** — domain deps keep growing
+
+```typescript
+constructor(
+    capacity: number,
+    reservationRepo: IReservationRepository,
+    authorizationManager: IAuthorizationManager,
+    cache: ICache,
+    logger: ILogger             // ← also a cross-cutting concern
+)
+```
+
+<!-- pause -->
+
+- **Aggregate Service** — group domain deps into one context object
+
+```typescript
+interface IMaitreDContext {
+    capacity: number;
+    reservationRepo: IReservationRepository;
+}
+
+export class MaitreDAggregate implements IMaitreD {
+    constructor(private context: IMaitreDContext) {}
+
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.context.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.context.capacity);
+    }
+}
+```
+
+<!-- end_slide -->
+
+Aggregate Service Pattern (2/2)
+---
+
+- **Combined with Decorator** — cross-cutting concerns stay out too
+
+```typescript
+const maitreD = new MaitreDLogDecorator(
+    new MaitreDAggregate({ capacity: 10, reservationRepo: new ReservationRepository() }),
+    new ConsoleLogger()
+);
+```
+
+<!-- pause -->
+
+- **Why this helps testing**
+
+> _The context object is a plain data structure — stub it with a single object literal in tests. The Aggregate class has one constructor param, so tests are trivial to set up. The Decorator wraps on top without polluting either._
+
+> 💻 **nvim** `src/maitreD/IMaitreDContext.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
 
 <!-- end_slide -->
 
