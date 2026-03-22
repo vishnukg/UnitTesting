@@ -67,7 +67,8 @@ Agenda
 - Clean Architecture & Testing
 
 🔧 **Solutions**
-- Decorator Pattern
+- Decorator Pattern (1/2)
+- Decorator Pattern (2/2)
 - The Clean Core and the Smell: V1 → V2
 - From Smell to Solution: V3 → V4
 - The Wiring — Composition Root
@@ -198,7 +199,7 @@ expect(mockEmailService.send).toHaveBeenCalledWith(order.customerEmail);
 
 <!-- pause -->
 
-> _Prefer **value** over **state** over **interaction**. Interaction tests are the most brittle — they assert on HOW something works, not WHAT it does. They break when you refactor even if the behaviour is unchanged._
+> _**Refactoring Safety:** Prefer **value** over **state** over **interaction**. Interaction tests are the most brittle — they assert on HOW something works, not WHAT it does. They break when you refactor even if the behaviour is unchanged._
 
 <!-- end_slide -->
 
@@ -597,15 +598,15 @@ Stubs vs Mocks (1/2)
 
 <!-- pause -->
 
-- **Stubs**
+- **Stubs** — _Indirect Inputs_
 
-> _A controllable replacement that returns preset values. Used to feed indirect inputs into the SUT. You never assert on a stub._
+> _A controllable replacement that returns preset values. Use these for **data retrieval** (e.g. querying a DB or API). You never assert on a stub._
 
 <!-- pause -->
 
-- **Mocks**
+- **Mocks** — _Indirect Outputs_
 
-> _A fake that records interactions and decides whether the test passes or fails. You assert on a mock. There's usually no more than one mock per test._
+> _A fake that records interactions and decides whether the test passes or fails. Use these for **side-effects** (e.g. sending an email or logging). You assert on a mock. There's usually no more than one mock per test._
 
 <!-- pause -->
 
@@ -698,10 +699,10 @@ Clean Architecture & Testing
 
 - **The Four Layers**
 
-> _**Entities** — enterprise-wide business rules. The most stable layer, unaffected by any external change._
-> _**Use Cases** — application-specific logic that orchestrates entities. Changes only when business requirements change._
-> _**Interface Adapters** — convert data between the format convenient for use cases and the format needed by external systems (MVC controllers, presenters, repository implementations)._
-> _**Frameworks & Drivers** — the outermost layer: databases, web frameworks, UI. All the details live here._
+> _**Entities** — enterprise-wide business rules. (e.g. our `canAccommodate` pure function)._
+> _**Use Cases** — application-specific logic that orchestrates entities. (e.g. our `MaitreD.canReserve`)._
+> _**Interface Adapters** — convert data between layers. (e.g. our `IReservationRepository` interface/port)._
+> _**Frameworks & Drivers** — external details. (e.g. the real SQL implementation of the repository)._
 
 <!-- pause -->
 
@@ -727,7 +728,7 @@ Clean Architecture & Testing
 
 <!-- end_slide -->
 
-Decorator Pattern
+Decorator Pattern (1/2)
 ---
 
 > _The Decorator pattern attaches additional behaviour to an object by wrapping it inside another object that shares the same interface. The wrapper delegates to the real object for the core work, and adds its own behaviour around it._
@@ -766,7 +767,10 @@ Decorator Pattern
 
 > _If you find yourself adding a new dependency to a constructor just to handle logging, caching, or authorisation — stop. That is a cross-cutting concern. Wrap it with a Decorator instead._
 
-<!-- pause -->
+<!-- end_slide -->
+
+Decorator Pattern (2/2)
+---
 
 - **When NOT to use it**
 
@@ -802,6 +806,10 @@ export class MaitreDWithTsDecorator implements IMaitreD {
 - **The trade-off**
 
 > _The class-based Decorator injects `ILogger` via the constructor — fully mockable in tests. The TypeScript `@decorator` binds the logger at class definition time — easier to read, but the logger is harder to swap in tests. For production code, TypeScript decorators are elegant. For strict unit testing of the logging behaviour itself, the class-based Decorator wins._
+
+<!-- pause -->
+
+> _**Pro-tip:** You can still test the **logic** of the class in isolation (it doesn't care about the decorator), and verify the **logging** via an integration test or by using the class-based decorator approach for that specific requirement._
 
 <!-- end_slide -->
 
