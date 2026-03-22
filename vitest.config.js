@@ -13,9 +13,14 @@ export default defineConfig({
             "**/I.*"
         ],
         coverage: {
-            reporter: ["text", "lcov"],
+            reporter: [["text", { skipEmpty: true }], ["lcov", { skipEmpty: true }]],
             include: ["src/**/*.ts"], // Only include files that are imported by tests
-            exclude: ["**/*.test.ts", "**/__tests__/**"],
+            exclude: [
+                "**/*.test.ts",
+                "**/__tests__/**",
+                "**/index.ts",
+                "**/I.*"
+            ],
             all: false // Only instrument files that are actually tested
         }
     }

@@ -26,3 +26,12 @@ test("MaitreDWithTsDecorator should not allow reservation if over capacity", () 
 
     assert.equal(result, false);
 });
+
+test("MaitreDWithTsDecorator should return total capacity", () => {
+    const stubRepository = mock<IReservationRepository>();
+    const sut = new MaitreDWithTsDecorator(20, stubRepository);
+
+    const result = sut.getTotalCapacity();
+
+    assert.equal(result, 20);
+});

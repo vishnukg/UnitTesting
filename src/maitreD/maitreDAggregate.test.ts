@@ -26,3 +26,13 @@ test("MaitreDAggregate should not allow reservation if over capacity", () => {
 
     assert.equal(result, false);
 });
+
+test("MaitreDAggregate should return total capacity", () => {
+    const stubRepository = mock<IReservationRepository>();
+    const context: IMaitreDContext = { capacity: 15, reservationRepo: stubRepository };
+    const sut = new MaitreDAggregate(context);
+
+    const result = sut.getTotalCapacity();
+
+    assert.equal(result, 15);
+});
