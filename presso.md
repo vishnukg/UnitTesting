@@ -6,7 +6,7 @@ date: "2026-03-21"
 theme:
   override:
     default:
-      font_size: 4
+      font_size: 0
     slide_title:
       colors:
         foreground: "00cc00"
@@ -39,6 +39,10 @@ theme:
 Agenda
 ---
 
+<!-- column_layout: [1, 1] -->
+
+<!-- column: 0 -->
+
 🎯 **The Why**
 - What is a Unit Test?
 - SUT — System Under Test
@@ -50,17 +54,20 @@ Agenda
 📚 **Foundations**
 - Characteristics of a good Unit Test
 - Test Pain as a Signal
-- Concepts
+- Concepts (1/2)
+- Concepts (2/2)
 
 🧪 **Writing Tests**
 - The Restaurant Scenario
 - Testing Pyramid
 - The Ice Cream Cone Anti-Pattern
-- Sociable vs Solitary Tests (1/2)
-- London vs Chicago School
+- Sociable vs Solitary Tests (1/3)
+- Sociable vs Solitary Tests (2/3)
 - Sociable vs Solitary Tests (3/3)
 - Stubs vs Mocks (1/2)
 - Stubs vs Mocks (2/2)
+
+<!-- column: 1 -->
 
 🚨 **When It Goes Wrong**
 - Test Smells
@@ -75,6 +82,8 @@ Agenda
 - Aggregate Service Pattern
 - Summary
 - Bibliography
+
+<!-- reset_layout -->
 
 <!-- end_slide -->
 
@@ -327,12 +336,10 @@ Test Pain as a Signal
 
 <!-- end_slide -->
 
-Concepts
+Concepts (1/2)
 ---
 
 > _These concepts come up repeatedly in the talk. Treat this slide as a reference — we'll see them all in action in the demo section._
-
-<!-- pause -->
 
 - **Dependency Injection**
 
@@ -350,7 +357,10 @@ Concepts
 
 > _A Composition Root is a (preferably) unique location in an application where modules are composed together._
 
-<!-- pause -->
+<!-- end_slide -->
+
+Concepts (2/2)
+---
 
 - **Constructor Over-Injection**
 
@@ -360,7 +370,7 @@ constructor(
   logger: ILogger,
   authorizationManager: IAuthorizationManager,
   cache: ICache,
-  emailService: IEmailService,
+  emailService: IEmailService
 )
 ```
 
@@ -500,18 +510,24 @@ The Ice Cream Cone Anti-Pattern
 
 <!-- end_slide -->
 
-Sociable vs Solitary Tests (1/2)
+Sociable vs Solitary Tests (1/3)
 ---
+
+<!-- column_layout: [1, 1] -->
+
+<!-- column: 0 -->
 
 - **Sociable Tests**
 
 > _A sociable test exercises the system under test along with its real collaborators. It tests a unit of behaviour that may span multiple objects._
 
-<!-- pause -->
+<!-- column: 1 -->
 
 - **Solitary Tests**
 
 > _A solitary test replaces all collaborators of the system under test with test doubles (stubs or mocks), ensuring the test is fully isolated from external state or behaviour._
+
+<!-- reset_layout -->
 
 <!-- pause -->
 
@@ -547,7 +563,7 @@ Sociable vs Solitary Tests (1/2)
 
 <!-- end_slide -->
 
-London vs Chicago School
+Sociable vs Solitary Tests (2/3)
 ---
 
 - **London School** _(Mockist)_ — aligns with **Solitary Tests**
