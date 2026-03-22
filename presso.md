@@ -71,11 +71,14 @@ Agenda
 
 🚨 **When It Goes Wrong**
 - Test Smells
-- Clean Architecture & Testing
+- Clean Architecture & Testing (1/2)
+- Clean Architecture & Testing (2/2)
 
 🔧 **Solutions**
-- Decorator Pattern (1/2)
-- Decorator Pattern (2/2)
+- Decorator Pattern (1/4)
+- Decorator Pattern (2/4)
+- Decorator Pattern (3/4)
+- Decorator Pattern (4/4)
 - The Clean Core and the Smell: V1 → V2
 - From Smell to Solution: V3 → V4
 - The Wiring — Composition Root
@@ -708,7 +711,7 @@ Test Smells
 
 <!-- end_slide -->
 
-Clean Architecture & Testing
+Clean Architecture & Testing (1/2)
 ---
 
 - **The Dependency Rule**
@@ -728,7 +731,10 @@ Clean Architecture & Testing
 
 ![](CleanArchitecture.jpg)
 
-<!-- pause -->
+<!-- end_slide -->
+
+Clean Architecture & Testing (2/2)
+---
 
 - **Driving vs Driven Adapters**
 
@@ -750,7 +756,7 @@ Clean Architecture & Testing
 
 <!-- end_slide -->
 
-Decorator Pattern (1/2)
+Decorator Pattern (1/4)
 ---
 
 > _The Decorator pattern attaches additional behaviour to an object by wrapping it inside another object that shares the same interface. The wrapper delegates to the real object for the core work, and adds its own behaviour around it._
@@ -779,7 +785,10 @@ Decorator Pattern (1/2)
 
 > 💻 **nvim** `src/maitreD/maitredlogdecorator.ts`
 
-<!-- pause -->
+<!-- end_slide -->
+
+Decorator Pattern (2/4)
+---
 
 - **Why it keeps things testable**
 
@@ -793,7 +802,7 @@ Decorator Pattern (1/2)
 
 <!-- end_slide -->
 
-Decorator Pattern (2/2)
+Decorator Pattern (3/4)
 ---
 
 - **When NOT to use it**
@@ -803,8 +812,6 @@ Decorator Pattern (2/2)
 <!-- pause -->
 
 - **TypeScript method decorator — an alternative**
-
-> _TypeScript decorators annotate a method directly with `@Log(...)`. No wrapper class needed. The logger is bound at class definition time, so the constructor stays clean — only domain deps._
 
 ```typescript
 const logger = new ConsoleLogger(); // bound at definition time
@@ -825,7 +832,10 @@ export class MaitreDWithTsDecorator implements IMaitreD {
 }
 ```
 
-<!-- pause -->
+<!-- end_slide -->
+
+Decorator Pattern (4/4)
+---
 
 - **The trade-off**
 
