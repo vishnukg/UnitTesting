@@ -418,7 +418,7 @@ The Restaurant Scenario
 
 <!-- pause -->
 
-> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/reservation.ts` · `src/maitreD/ireservationrepository.ts`
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/reservation.ts` · `src/repository/IReservationRepository.ts`
 
 <!-- end_slide -->
 

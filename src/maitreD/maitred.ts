@@ -3,21 +3,19 @@ import { IReservationRepository } from "../repository";
 import { canAccommodate } from "./canAccommodate";
 
 export class MaitreD implements IMaitreD {
-    private capacity: number;
-    private reservationRepo: IReservationRepository;
-    constructor(capacity: number, reservationRepo: IReservationRepository) {
-        this.capacity = capacity;
-        this.reservationRepo = reservationRepo;
-    }
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+    ) {}
 
     getTotalCapacity(): number {
         return this.capacity;
     }
 
     canReserve(reservation: Reservation): boolean {
-        const reservedSeats = this.reservationRepo.getReservationQuantity(
+        const reserved = this.reservationRepo.getReservationQuantity(
             reservation.Date
         );
-        return canAccommodate(reservedSeats, reservation.Quantity, this.capacity);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
     }
 }
