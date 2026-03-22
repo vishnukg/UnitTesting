@@ -201,6 +201,8 @@ expect(mockEmailService.send).toHaveBeenCalledWith(order.customerEmail);
 
 > _**Refactoring Safety:** Prefer **value** over **state** over **interaction**. Interaction tests are the most brittle — they assert on HOW something works, not WHAT it does. They break when you refactor even if the behaviour is unchanged._
 
+> 💻 **nvim** `src/statebased/counter.ts` · `src/statebased/counter.test.ts`
+
 <!-- end_slide -->
 
 Why Unit Tests?
@@ -378,6 +380,8 @@ export function canAccommodate(
     return reserved + quantity <= capacity;
 }
 ```
+
+> 💻 **nvim** `src/maitreD/canAccommodate.ts` · `src/maitreD/canAccommodate.test.ts`
 
 <!-- end_slide -->
 
@@ -726,6 +730,8 @@ Clean Architecture & Testing
 
 > _The inner core has zero external dependencies — unit test it directly, no mocks needed. Driven adapters sit behind interfaces — stub them in unit tests, or use the real implementation in integration tests. E2E tests only need to exercise the critical path from a driving adapter all the way through._
 
+> 💻 **nvim** `src/maitreD/canAccommodate.ts` · `src/maitreD/maitred.ts` · `src/repository/IReservationRepository.ts`
+
 <!-- end_slide -->
 
 Decorator Pattern (1/2)
@@ -754,6 +760,8 @@ Decorator Pattern (1/2)
 └──────────────┘              │  - adds logging around it │
                               └───────────────────────────┘
 ```
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts`
 
 <!-- pause -->
 
@@ -811,6 +819,8 @@ export class MaitreDWithTsDecorator implements IMaitreD {
 
 > _**Pro-tip:** You can still test the **logic** of the class in isolation (it doesn't care about the decorator), and verify the **logging** via an integration test or by using the class-based decorator approach for that specific requirement._
 
+> 💻 **nvim** `src/maitreD/maitreDWithTsDecorator.ts` · `src/maitreD/maitreDWithTsDecorator.test.ts`
+
 <!-- end_slide -->
 
 The Clean Core and the Smell: V1 → V2
@@ -858,6 +868,8 @@ export class MaitreDV2 implements IMaitreD {
 }
 ```
 
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts`
+
 <!-- end_slide -->
 
 From Smell to Solution: V3 → V4
@@ -901,6 +913,8 @@ export class MaitreDWithTsDecorator implements IMaitreD {
     }
 }
 ```
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts`
 
 <!-- end_slide -->
 
