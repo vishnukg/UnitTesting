@@ -70,15 +70,16 @@ Agenda
 <!-- column: 1 -->
 
 🚨 **When It Goes Wrong**
-- Test Smells
+- Test Smells (1/2)
+- Test Smells — How to Deodorize (2/2)
 
 🔧 **Solutions**
 - Decorator Pattern (1/2)
 - Decorator Pattern (2/2)
 - The Clean Core and the Smell: V1 → V2
 - From Smell to Solution: V3
-- The Wiring — Composition Root
 - Aggregate Service Pattern
+- The Wiring — Composition Root
 - Clean Architecture & Testing (1/2)
 - Clean Architecture & Testing (2/2)
 - Summary
@@ -674,30 +675,77 @@ Stubs vs Mocks (2/2)
 
 <!-- end_slide -->
 
-Test Smells
+Test Smells (1/2)
 ---
 
-- **Brittle Tests**
+- **Brittle Tests** — coupled to **how** the code works, not **what** it does
 
-> _A brittle test breaks when implementation details change, even if the observable behaviour hasn't. This usually means the test is coupled to how the code works rather than what it does._
+```typescript
+// ❌ Testing structure — breaks if you refactor internals
+sut.canReserve(reservation);
+expect(mockRepository.getReservationQuantity)
+    .toHaveBeenCalledWith("12/12/2022");
 
-<!-- pause -->
-
-- **Testing structure vs behaviour**
-
-> _Testing structure means asserting on internal implementation details (method calls, private state). Testing behaviour means asserting on observable outcomes. Prefer behaviour — it survives refactoring._
-
-<!-- pause -->
-
-- **Mock over-use**
-
-> _Reaching for a mock when a stub would do leads to tests that are tightly coupled to call sequences. If you're not asserting on an interaction, use a stub._
+// ✅ Testing behaviour — survives refactoring
+const result = sut.canReserve(reservation);
+assert.equal(result, true);
+```
 
 <!-- pause -->
 
-- **How to deodorize test smells**
+- **Mock Over-use** — asserting on interactions already covered by value tests
 
-> _Prefer value-based and state-based assertions over interaction testing. Introduce a Facade or Aggregate Service to reduce Constructor Over-Injection _(covered in the Aggregate Service Pattern slide)_. Delete tests that duplicate coverage without adding signal._
+```typescript
+// ❌ Redundant — if repo wasn't called, the value test would already fail
+expect(mockRepository.getReservationQuantity).toHaveBeenCalled();
+
+// ✅ Justified — logging is a side-effect with no return value to assert on
+expect(mockLogger.Log)
+    .toHaveBeenCalledWith("Checking if the reservation can be made");
+```
+
+<!-- pause -->
+
+- **Constructor Over-Injection** — cross-cutting deps pollute every test
+
+```typescript
+// V1 — clean: only domain deps
+const sut = new MaitreD(10, stubRepository);
+
+// V2 — noisy: logger and cache are irrelevant but must be set up
+const sut = new MaitreDV2(10, stubRepository, stubLogger, stubCache);
+```
+
+> 💻 **nvim** `src/maitreD/maitred.test.ts` · `src/maitreD/maitredV2.test.ts`
+
+<!-- end_slide -->
+
+Test Smells — How to Deodorize (2/2)
+---
+
+> _Test smells are not bugs in your tests — they are signals about your design._
+
+<!-- pause -->
+
+- **Brittle tests?** → Assert on observable outcomes, not internal call sequences
+
+<!-- pause -->
+
+- **Mock over-use?** → Ask: _"if I remove this assertion, would another test catch the failure?"_ If yes, delete it
+
+<!-- pause -->
+
+- **Constructor Over-Injection?** → Separate domain dependencies from cross-cutting concerns
+
+<!-- pause -->
+
+> _The next slides show three patterns that address these smells:_
+
+<!-- pause -->
+
+- **Decorator Pattern** — extract cross-cutting concerns (logging, caching) into wrappers
+- **Aggregate Service Pattern** — group fine-grained domain dependencies behind a meaningful interface
+- **Composition Root** — wire everything together in one place, keeping classes clean
 
 > 💻 **nvim** `src/maitreD/maitred.test.ts` · `src/maitreD/maitredV2.test.ts`
 
