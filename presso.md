@@ -78,8 +78,8 @@ Agenda
 - Decorator Pattern (2/2)
 - The Clean Core and the Smell: V1 → V2
 - From Smell to Solution: V3
-- Aggregate Service Pattern
 - The Wiring — Composition Root
+- Aggregate Service Pattern
 - Clean Architecture & Testing (1/2)
 - Clean Architecture & Testing (2/2)
 - Summary
