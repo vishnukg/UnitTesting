@@ -28,6 +28,7 @@ test("canReserve returns cached result without calling inner MaitreD", () => {
     const result = sut.canReserve(reservation);
 
     assert.equal(result, true);
+    expect(stubCache.get).toHaveBeenCalledWith("reserved:12/12/2022");
     expect(stubMaitreD.canReserve).not.toHaveBeenCalled();
 });
 

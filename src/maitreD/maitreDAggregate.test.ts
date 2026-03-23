@@ -1,17 +1,15 @@
-import { test, assert } from "vitest";
+import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
-import { MaitreDAggregate, IRestaurantContext, IPaymentContext, Reservation } from ".";
-import { IReservationRepository } from "../repository";
-import { IPaymentProcessor } from "../payment";
+import { MaitreDAggregate, Reservation } from ".";
+import { IReservationService } from "./IReservationService";
+import { IPaymentService } from "./IPaymentService";
 
 test("MaitreDAggregate should allow reservation if under capacity and deposit held", () => {
-    const stubRepository = mock<IReservationRepository>();
-    stubRepository.getReservationQuantity.mockReturnValue(3);
-    const restaurantContext: IRestaurantContext = { capacity: 10, reservationRepo: stubRepository };
-    const stubPayment = mock<IPaymentProcessor>();
-    stubPayment.holdDeposit.mockReturnValue(true);
-    const paymentContext: IPaymentContext = { depositAmount: 50, paymentProcessor: stubPayment };
-    const sut = new MaitreDAggregate(restaurantContext, paymentContext);
+    const stubReservationService = mock<IReservationService>();
+    stubReservationService.canAccommodate.mockReturnValue(true);
+    const stubPaymentService = mock<IPaymentService>();
+    stubPaymentService.holdDeposit.mockReturnValue(true);
+    const sut = new MaitreDAggregate(stubReservationService, stubPaymentService);
 
     const reservation: Reservation = { id: 1, Date: "12/12/2022", Quantity: 3 };
     const result = sut.canReserve(reservation);
@@ -20,12 +18,10 @@ test("MaitreDAggregate should allow reservation if under capacity and deposit he
 });
 
 test("MaitreDAggregate should not allow reservation if over capacity", () => {
-    const stubRepository = mock<IReservationRepository>();
-    stubRepository.getReservationQuantity.mockReturnValue(10);
-    const restaurantContext: IRestaurantContext = { capacity: 10, reservationRepo: stubRepository };
-    const stubPayment = mock<IPaymentProcessor>();
-    const paymentContext: IPaymentContext = { depositAmount: 50, paymentProcessor: stubPayment };
-    const sut = new MaitreDAggregate(restaurantContext, paymentContext);
+    const stubReservationService = mock<IReservationService>();
+    stubReservationService.canAccommodate.mockReturnValue(false);
+    const stubPaymentService = mock<IPaymentService>();
+    const sut = new MaitreDAggregate(stubReservationService, stubPaymentService);
 
     const reservation: Reservation = { id: 1, Date: "12/12/2022", Quantity: 3 };
     const result = sut.canReserve(reservation);
@@ -34,13 +30,11 @@ test("MaitreDAggregate should not allow reservation if over capacity", () => {
 });
 
 test("MaitreDAggregate should not allow reservation if deposit fails", () => {
-    const stubRepository = mock<IReservationRepository>();
-    stubRepository.getReservationQuantity.mockReturnValue(3);
-    const restaurantContext: IRestaurantContext = { capacity: 10, reservationRepo: stubRepository };
-    const stubPayment = mock<IPaymentProcessor>();
-    stubPayment.holdDeposit.mockReturnValue(false);
-    const paymentContext: IPaymentContext = { depositAmount: 50, paymentProcessor: stubPayment };
-    const sut = new MaitreDAggregate(restaurantContext, paymentContext);
+    const stubReservationService = mock<IReservationService>();
+    stubReservationService.canAccommodate.mockReturnValue(true);
+    const stubPaymentService = mock<IPaymentService>();
+    stubPaymentService.holdDeposit.mockReturnValue(false);
+    const sut = new MaitreDAggregate(stubReservationService, stubPaymentService);
 
     const reservation: Reservation = { id: 1, Date: "12/12/2022", Quantity: 3 };
     const result = sut.canReserve(reservation);
@@ -48,14 +42,40 @@ test("MaitreDAggregate should not allow reservation if deposit fails", () => {
     assert.equal(result, false);
 });
 
-test("MaitreDAggregate should return total capacity", () => {
-    const stubRepository = mock<IReservationRepository>();
-    const restaurantContext: IRestaurantContext = { capacity: 15, reservationRepo: stubRepository };
-    const stubPayment = mock<IPaymentProcessor>();
-    const paymentContext: IPaymentContext = { depositAmount: 50, paymentProcessor: stubPayment };
-    const sut = new MaitreDAggregate(restaurantContext, paymentContext);
+test("canReserve forwards the correct arguments to reservationService", () => {
+    const mockReservationService = mock<IReservationService>();
+    mockReservationService.canAccommodate.mockReturnValue(true);
+    const stubPaymentService = mock<IPaymentService>();
+    stubPaymentService.holdDeposit.mockReturnValue(true);
+    const sut = new MaitreDAggregate(mockReservationService, stubPaymentService);
 
-    const result = sut.getTotalCapacity();
+    const reservation: Reservation = { id: 1, Date: "12/12/2022", Quantity: 3 };
+    sut.canReserve(reservation);
 
-    assert.equal(result, 15);
+    expect(mockReservationService.canAccommodate).toHaveBeenCalledWith("12/12/2022", 3);
+});
+
+test("canReserve forwards the correct reservation id to paymentService", () => {
+    const stubReservationService = mock<IReservationService>();
+    stubReservationService.canAccommodate.mockReturnValue(true);
+    const mockPaymentService = mock<IPaymentService>();
+    mockPaymentService.holdDeposit.mockReturnValue(true);
+    const sut = new MaitreDAggregate(stubReservationService, mockPaymentService);
+
+    const reservation: Reservation = { id: 42, Date: "12/12/2022", Quantity: 3 };
+    sut.canReserve(reservation);
+
+    expect(mockPaymentService.holdDeposit).toHaveBeenCalledWith(42);
+});
+
+test("canReserve does not call paymentService when capacity check fails", () => {
+    const stubReservationService = mock<IReservationService>();
+    stubReservationService.canAccommodate.mockReturnValue(false);
+    const mockPaymentService = mock<IPaymentService>();
+    const sut = new MaitreDAggregate(stubReservationService, mockPaymentService);
+
+    const reservation: Reservation = { id: 1, Date: "12/12/2022", Quantity: 3 };
+    sut.canReserve(reservation);
+
+    expect(mockPaymentService.holdDeposit).not.toHaveBeenCalled();
 });

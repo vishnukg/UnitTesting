@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { test, expect, assert } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { IMaitreD, MaitreD, MaitreDLogDecorator, Reservation } from ".";
 import { ILogger } from "../cross-cutting";
@@ -16,6 +16,23 @@ test("getTotalCapacity returns the capacity from the wrapped IMaitreD", () => {
 
     // Assert — behaviour: does it return the right value?
     expect(result).toBe(10);
+});
+
+test("canReserve delegates to the wrapped IMaitreD with the correct reservation", () => {
+    const mockMaitreD = mock<IMaitreD>();
+    mockMaitreD.canReserve.mockReturnValue(true);
+    const stubLogger = mock<ILogger>();
+    const reservation: Reservation = {
+        id: 1,
+        Date: "12/12/2022",
+        Quantity: 3
+    };
+    const sut = new MaitreDLogDecorator(mockMaitreD, stubLogger);
+
+    const result = sut.canReserve(reservation);
+
+    expect(result).toBe(true);
+    expect(mockMaitreD.canReserve).toHaveBeenCalledWith(reservation);
 });
 
 test("CanReserve when called invokes logger with message", () => {

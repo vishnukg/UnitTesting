@@ -940,34 +940,30 @@ constructor(
 
 <!-- pause -->
 
-- **Aggregate Service** — group domain deps into context objects
+- **Aggregate Service** — group domain deps into services
 
 ```typescript
-interface IRestaurantContext {
-    capacity: number;
-    reservationRepo: IReservationRepository;
+interface IReservationService {
+    getReservedSeats(date: string): number;
+    canAccommodate(date: string, quantity: number): boolean;
 }
 
-interface IPaymentContext {
-    depositAmount: number;
-    paymentProcessor: IPaymentProcessor;
+interface IPaymentService {
+    holdDeposit(reservationId: number): boolean;
 }
 
 export class MaitreDAggregate implements IMaitreD {
     constructor(
-        private restaurantContext: IRestaurantContext,
-        private paymentContext: IPaymentContext
+        private reservationService: IReservationService,
+        private paymentService: IPaymentService
     ) {}
 
     canReserve(reservation: Reservation): boolean {
-        const reserved = this.restaurantContext.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        if (!canAccommodate(reserved, reservation.Quantity,
-            this.restaurantContext.capacity)) {
+        if (!this.reservationService.canAccommodate(
+            reservation.Date, reservation.Quantity)) {
             return false;
         }
-        return this.paymentContext.paymentProcessor
-            .holdDeposit(reservation.id, this.paymentContext.depositAmount);
+        return this.paymentService.holdDeposit(reservation.id);
     }
 }
 ```
@@ -982,8 +978,8 @@ Aggregate Service Pattern (2/2)
 ```typescript
 const maitreD = new MaitreDLogDecorator(
     new MaitreDAggregate(
-        { capacity: 10, reservationRepo: new ReservationRepository() },
-        { depositAmount: 50, paymentProcessor: new PaymentProcessor() }
+        new ReservationService(10, new ReservationRepository()),
+        new PaymentService(50, new PaymentProcessor())
     ),
     new ConsoleLogger()
 );
@@ -993,9 +989,9 @@ const maitreD = new MaitreDLogDecorator(
 
 - **Why this helps testing**
 
-> _Each context is a plain data structure — stub it with a single object literal in tests. The Aggregate class groups domain deps by concept (restaurant vs payment), keeping each one focused. The Decorator wraps on top without polluting either._
+> _Each service hides its own dependencies behind a simple interface — stub it with a single mock in tests. MaitreD only sees `IReservationService` and `IPaymentService`, not the four fine-grained deps behind them. The Decorator wraps on top without polluting either._
 
-> 💻 **nvim** `src/maitreD/IMaitreDContext.ts` · `src/maitreD/IPaymentContext.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
+> 💻 **nvim** `src/maitreD/IReservationService.ts` · `src/maitreD/IPaymentService.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
 
 <!-- end_slide -->
 
