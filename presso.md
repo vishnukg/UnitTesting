@@ -2,7 +2,7 @@
 title: "Test Smell Driven Design"
 sub_title: "Let your tests tell you how to improve your code"
 author: Vishnu Ganesan
-date: "2026-03-21"
+date: "2026-03-23"
 theme:
   override:
     default:
@@ -71,18 +71,16 @@ Agenda
 
 🚨 **When It Goes Wrong**
 - Test Smells
-- Clean Architecture & Testing (1/2)
-- Clean Architecture & Testing (2/2)
 
 🔧 **Solutions**
-- Decorator Pattern (1/4)
-- Decorator Pattern (2/4)
-- Decorator Pattern (3/4)
-- Decorator Pattern (4/4)
+- Decorator Pattern (1/2)
+- Decorator Pattern (2/2)
 - The Clean Core and the Smell: V1 → V2
-- From Smell to Solution: V3 → V4
+- From Smell to Solution: V3
 - The Wiring — Composition Root
 - Aggregate Service Pattern
+- Clean Architecture & Testing (1/2)
+- Clean Architecture & Testing (2/2)
 - Summary
 - Bibliography
 
@@ -257,7 +255,7 @@ Refactoring — It's Not a Task
 
 <!-- pause -->
 
-- **The Boy Scout Rule**
+- **The Campsite Rule**
 
 > _"Always leave the code better than you found it."_ — Robert C. Martin (Uncle Bob)
 >
@@ -711,6 +709,296 @@ Test Smells
 
 <!-- end_slide -->
 
+Decorator Pattern (1/2)
+---
+
+> _The Decorator pattern attaches additional behaviour to an object by wrapping it inside another object that shares the same interface. The wrapper delegates to the real object for the core work, and adds its own behaviour around it._
+
+<!-- pause -->
+
+```
+  <<interface>>
+   IMaitreD
+  ┌──────────────┐
+  │ canReserve() │
+  │ getCapacity()│
+  └──────┬───────┘
+         │ implements
+         │
+    ┌────┴────────────────────────────────────────────────────┐
+    │                    │                                    │
+    ▼                    ▼                                    ▼
+┌──────────────┐ ┌───────────────────────────┐ ┌────────────────────────────┐
+│   MaitreD    │ │   MaitreDLogDecorator     │ │   MaitreDCacheDecorator    │
+│  (real impl) │ │                           │ │                            │
+│              │ │  - delegates canReserve() │ │  - delegates canReserve()  │
+└──────────────┘ │  - adds logging around it │ │  - adds caching around it  │
+                 └───────────────────────────┘ └────────────────────────────┘
+```
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDCacheDecorator.ts`
+
+<!-- end_slide -->
+
+Decorator Pattern (2/2)
+---
+
+- **Why it keeps things testable**
+
+> _The real `MaitreD` stays free of cross-cutting concerns — unit test it with no noise. The decorator can be tested in isolation by wrapping a mock. Neither class knows about the other's internals._
+
+<!-- pause -->
+
+- **When NOT to use it**
+
+> _When the behaviour is core domain logic, not a cross-cutting concern. If removing the decorator would break the business rule, it belongs inside the class, not outside it._
+
+<!-- pause -->
+
+- **The rule**
+
+> _If you find yourself adding a new dependency to a constructor just to handle logging, caching, or authorisation — stop. That is a cross-cutting concern. Wrap it with a Decorator instead._
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDCacheDecorator.ts`
+
+<!-- end_slide -->
+
+The Clean Core and the Smell: V1 → V2
+---
+
+> _Our `MaitreD` went through four versions. Each version illustrates a concept from this talk._
+
+<!-- pause -->
+
+- **V1 — Only domain dependencies, no cross-cutting concerns**
+
+```typescript
+export class MaitreD implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+<!-- pause -->
+
+- **V2 — Constructor Over-Injection smell introduced**
+
+```typescript
+export class MaitreDV2 implements IMaitreD {
+    constructor(
+        private capacity: number,
+        private reservationRepo: IReservationRepository,
+        private logger: ILogger,  // ← cross-cutting concern crept in
+        private cache: ICache     // ← and another one
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        this.logger.Log("Checking if the reservation can be made");
+
+        const cacheKey = `reserved:${reservation.Date}`;
+        let reserved = this.cache.get<number>(cacheKey);
+        if (reserved === undefined) {
+            reserved = this.reservationRepo
+                .getReservationQuantity(reservation.Date);
+            this.cache.set(cacheKey, reserved);
+        }
+
+        return canAccommodate(reserved, reservation.Quantity, this.capacity);
+    }
+}
+```
+
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts`
+
+<!-- end_slide -->
+
+From Smell to Solution: V3
+---
+
+- **V3 — Class-based Decorators remove the smell**
+
+```typescript
+export class MaitreDLogDecorator implements IMaitreD {
+    constructor(
+        private maitreD: IMaitreD,  // wraps any IMaitreD
+        private logger: ILogger
+    ) {}
+
+    getTotalCapacity(): number {
+        return this.maitreD.getTotalCapacity();
+    }
+
+    canReserve(reservation: Reservation): boolean {
+        this.logger.Log("Checking if the reservation can be made");
+        return this.maitreD.canReserve(reservation); // delegates
+    }
+}
+```
+
+<!-- pause -->
+
+```typescript
+export class MaitreDCacheDecorator implements IMaitreD {
+    constructor(
+        private maitreD: IMaitreD,  // wraps any IMaitreD
+        private cache: ICache
+    ) {}
+
+    getTotalCapacity(): number {
+        return this.maitreD.getTotalCapacity();
+    }
+
+    canReserve(reservation: Reservation): boolean {
+        const cacheKey = `reserved:${reservation.Date}`;
+        const cached = this.cache.get<boolean>(cacheKey);
+        if (cached !== undefined) return cached;
+
+        const result = this.maitreD.canReserve(reservation);
+        this.cache.set(cacheKey, result);
+        return result; // delegates + caches
+    }
+}
+```
+
+<!-- pause -->
+
+- **Stack them at the Composition Root**
+
+```typescript
+const maitreDV3 = new MaitreDLogDecorator(
+    new MaitreDCacheDecorator(
+        new MaitreD(10, new ReservationRepository()),
+        new MemoryCache()
+    ),
+    new ConsoleLogger()
+);
+```
+
+> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDCacheDecorator.ts`
+
+<!-- end_slide -->
+
+The Wiring — Composition Root
+---
+
+- **All versions side by side**
+
+```typescript
+// V1 — no logging
+const maitreDV1 = new MaitreD(10, new ReservationRepository());
+
+// V2 — Constructor Over-Injection smell (logger + cache in constructor)
+const maitreDV2 = new MaitreDV2(
+    10, new ReservationRepository(), new ConsoleLogger(), new MemoryCache()
+);
+
+// V3 — stacked Decorators, each concern wrapped independently
+const maitreDV3 = new MaitreDLogDecorator(
+    new MaitreDCacheDecorator(
+        new MaitreD(10, new ReservationRepository()),
+        new MemoryCache()
+    ),
+    new ConsoleLogger()
+);
+```
+
+> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts` · `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDCacheDecorator.ts` · `src/index.ts`
+
+<!-- end_slide -->
+
+Aggregate Service Pattern (1/2)
+---
+
+> _The Aggregate Service (also called Facade) groups a set of related fine-grained dependencies into a single coarse-grained dependency. It gives the group a meaningful name that belongs to the domain._
+
+<!-- pause -->
+
+- **When to use it**
+
+> _When a class has many constructor parameters that all belong to the same concept — not cross-cutting concerns, but domain-level dependencies that naturally go together._
+
+<!-- pause -->
+
+- **The problem** — domain deps keep growing
+
+```typescript
+constructor(
+    capacity: number,
+    reservationRepo: IReservationRepository,
+    depositAmount: number,
+    paymentProcessor: IPaymentProcessor
+)
+```
+
+<!-- pause -->
+
+- **Aggregate Service** — group domain deps into context objects
+
+```typescript
+interface IRestaurantContext {
+    capacity: number;
+    reservationRepo: IReservationRepository;
+}
+
+interface IPaymentContext {
+    depositAmount: number;
+    paymentProcessor: IPaymentProcessor;
+}
+
+export class MaitreDAggregate implements IMaitreD {
+    constructor(
+        private restaurantContext: IRestaurantContext,
+        private paymentContext: IPaymentContext
+    ) {}
+
+    canReserve(reservation: Reservation): boolean {
+        const reserved = this.restaurantContext.reservationRepo
+            .getReservationQuantity(reservation.Date);
+        if (!canAccommodate(reserved, reservation.Quantity,
+            this.restaurantContext.capacity)) {
+            return false;
+        }
+        return this.paymentContext.paymentProcessor
+            .holdDeposit(reservation.id, this.paymentContext.depositAmount);
+    }
+}
+```
+
+<!-- end_slide -->
+
+Aggregate Service Pattern (2/2)
+---
+
+- **Combined with Decorator** — cross-cutting concerns stay out too
+
+```typescript
+const maitreD = new MaitreDLogDecorator(
+    new MaitreDAggregate(
+        { capacity: 10, reservationRepo: new ReservationRepository() },
+        { depositAmount: 50, paymentProcessor: new PaymentProcessor() }
+    ),
+    new ConsoleLogger()
+);
+```
+
+<!-- pause -->
+
+- **Why this helps testing**
+
+> _Each context is a plain data structure — stub it with a single object literal in tests. The Aggregate class groups domain deps by concept (restaurant vs payment), keeping each one focused. The Decorator wraps on top without polluting either._
+
+> 💻 **nvim** `src/maitreD/IMaitreDContext.ts` · `src/maitreD/IPaymentContext.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
+
+<!-- end_slide -->
+
 Clean Architecture & Testing (1/2)
 ---
 
@@ -756,287 +1044,6 @@ Clean Architecture & Testing (2/2)
 
 <!-- end_slide -->
 
-Decorator Pattern (1/4)
----
-
-> _The Decorator pattern attaches additional behaviour to an object by wrapping it inside another object that shares the same interface. The wrapper delegates to the real object for the core work, and adds its own behaviour around it._
-
-<!-- pause -->
-
-```
-  <<interface>>
-   IMaitreD
-  ┌──────────────┐
-  │ canReserve() │
-  │ getCapacity()│
-  └──────┬───────┘
-         │ implements
-         │
-    ┌────┴────────────────────────────────┐
-    │                                     │
-    ▼                                     ▼
-┌──────────────┐              ┌───────────────────────────┐
-│   MaitreD    │              │   MaitreDLogDecorator     │
-│  (real impl) │◀─ wraps ─────│                           │
-│              │              │  - delegates canReserve() │
-└──────────────┘              │  - adds logging around it │
-                              └───────────────────────────┘
-```
-
-> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts`
-
-<!-- end_slide -->
-
-Decorator Pattern (2/4)
----
-
-- **Why it keeps things testable**
-
-> _The real `MaitreD` stays free of cross-cutting concerns — unit test it with no noise. The decorator can be tested in isolation by wrapping a mock. Neither class knows about the other's internals._
-
-<!-- pause -->
-
-- **The rule**
-
-> _If you find yourself adding a new dependency to a constructor just to handle logging, caching, or authorisation — stop. That is a cross-cutting concern. Wrap it with a Decorator instead._
-
-<!-- end_slide -->
-
-Decorator Pattern (3/4)
----
-
-- **When NOT to use it**
-
-> _When the behaviour is core domain logic, not a cross-cutting concern. If removing the decorator would break the business rule, it belongs inside the class, not outside it._
-
-<!-- pause -->
-
-- **TypeScript method decorator — an alternative**
-
-```typescript
-const logger = new ConsoleLogger(); // bound at definition time
-
-export class MaitreDWithTsDecorator implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository
-        // no ILogger here — the decorator handles it
-    ) {}
-
-    @Log(logger, "Checking if the reservation can be made")
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-<!-- end_slide -->
-
-Decorator Pattern (4/4)
----
-
-- **The trade-off**
-
-> _The class-based Decorator injects `ILogger` via the constructor — fully mockable in tests. The TypeScript `@decorator` binds the logger at class definition time — easier to read, but the logger is harder to swap in tests. For production code, TypeScript decorators are elegant. For strict unit testing of the logging behaviour itself, the class-based Decorator wins._
-
-<!-- pause -->
-
-> _**Pro-tip:** You can still test the **logic** of the class in isolation (it doesn't care about the decorator), and verify the **logging** via an integration test or by using the class-based decorator approach for that specific requirement._
-
-> 💻 **nvim** `src/maitreD/maitreDWithTsDecorator.ts` · `src/maitreD/maitreDWithTsDecorator.test.ts`
-
-<!-- end_slide -->
-
-The Clean Core and the Smell: V1 → V2
----
-
-> _Our `MaitreD` went through four versions. Each version illustrates a concept from this talk._
-
-<!-- pause -->
-
-- **V1 — Pure function extracted, clean testable core**
-
-```typescript
-export class MaitreD implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-<!-- pause -->
-
-- **V2 — Constructor Over-Injection smell introduced**
-
-```typescript
-export class MaitreDV2 implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository,
-        private logger: ILogger  // ← cross-cutting concern crept in
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        this.logger.Log("Checking if the reservation can be made");
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts`
-
-<!-- end_slide -->
-
-From Smell to Solution: V3 → V4
----
-
-- **V3 — Class-based Decorator removes the smell**
-
-```typescript
-export class MaitreDLogDecorator implements IMaitreD {
-    constructor(
-        private maitreD: IMaitreD,  // wraps any IMaitreD
-        private logger: ILogger
-    ) {}
-
-    canReserve(reservation: Reservation): boolean {
-        this.logger.Log("Checking if the reservation can be made");
-        return this.maitreD.canReserve(reservation); // delegates
-    }
-}
-```
-
-<!-- pause -->
-
-- **V4 — TypeScript method decorator, no wrapper class needed**
-
-```typescript
-const logger = new ConsoleLogger();
-
-export class MaitreDWithTsDecorator implements IMaitreD {
-    constructor(
-        private capacity: number,
-        private reservationRepo: IReservationRepository
-        // no ILogger — decorator handles it
-    ) {}
-
-    @Log(logger, "Checking if the reservation can be made")
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.capacity);
-    }
-}
-```
-
-> 💻 **nvim** `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts`
-
-<!-- end_slide -->
-
-The Wiring — Composition Root
----
-
-- **All versions side by side**
-
-```typescript
-// V1 — no logging
-const maitreDV1 = new MaitreD(10, new ReservationRepository());
-
-// V3 — class-based Decorator, logger fully injectable
-const maitreDV3 = new MaitreDLogDecorator(
-    new MaitreD(10, new ReservationRepository()),
-    new ConsoleLogger()
-);
-
-// V4 — TypeScript decorator, logger bound at definition time
-const maitreDV4 = new MaitreDWithTsDecorator(10, new ReservationRepository());
-```
-
-> 💻 **nvim** `src/maitreD/maitred.ts` · `src/maitreD/maitredV2.ts` · `src/maitreD/maitredlogdecorator.ts` · `src/maitreD/maitreDWithTsDecorator.ts` · `src/index.ts`
-
-<!-- end_slide -->
-
-Aggregate Service Pattern (1/2)
----
-
-> _The Aggregate Service (also called Facade) groups a set of related fine-grained dependencies into a single coarse-grained dependency. It gives the group a meaningful name that belongs to the domain._
-
-<!-- pause -->
-
-- **When to use it**
-
-> _When a class has many constructor parameters that all belong to the same concept — not cross-cutting concerns, but domain-level dependencies that naturally go together._
-
-<!-- pause -->
-
-- **The problem** — domain deps keep growing
-
-```typescript
-constructor(
-    capacity: number,
-    reservationRepo: IReservationRepository,
-    authorizationManager: IAuthorizationManager,
-    cache: ICache
-    // logging is a cross-cutting concern — handled by the Decorator, not here
-)
-```
-
-<!-- pause -->
-
-- **Aggregate Service** — group domain deps into one context object
-
-```typescript
-interface IMaitreDContext {
-    capacity: number;
-    reservationRepo: IReservationRepository;
-}
-
-export class MaitreDAggregate implements IMaitreD {
-    constructor(private context: IMaitreDContext) {}
-
-    canReserve(reservation: Reservation): boolean {
-        const reserved = this.context.reservationRepo
-            .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.context.capacity);
-    }
-}
-```
-
-<!-- end_slide -->
-
-Aggregate Service Pattern (2/2)
----
-
-- **Combined with Decorator** — cross-cutting concerns stay out too
-
-```typescript
-const maitreD = new MaitreDLogDecorator(
-    new MaitreDAggregate({ capacity: 10, reservationRepo: new ReservationRepository() }),
-    new ConsoleLogger()
-);
-```
-
-<!-- pause -->
-
-- **Why this helps testing**
-
-> _The context object is a plain data structure — stub it with a single object literal in tests. The Aggregate class has one constructor param, so tests are trivial to set up. The Decorator wraps on top without polluting either._
-
-> 💻 **nvim** `src/maitreD/IMaitreDContext.ts` · `src/maitreD/maitreDAggregate.ts` · `src/maitreD/maitreDAggregate.test.ts`
-
-<!-- end_slide -->
-
 Summary
 ---
 
@@ -1044,7 +1051,7 @@ Summary
 
 <!-- pause -->
 
-- **Refactor continuously, not occasionally** — leave the code better than you found it (Boy Scout Rule). Tests give you the safety net to do this without fear.
+- **Refactor continuously, not occasionally** — leave the code better than you found it (Campsite Rule). Tests give you the safety net to do this without fear.
 
 <!-- pause -->
 

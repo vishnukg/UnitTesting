@@ -1,7 +1,7 @@
 import { test, assert, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { MaitreDV2, Reservation } from ".";
-import { ILogger } from "../cross-cutting";
+import { ICache, ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 
 test("MaitreDV2 should allow reservation if under capacity", () => {
@@ -10,12 +10,14 @@ test("MaitreDV2 should allow reservation if under capacity", () => {
     const stubRepository = mock<IReservationRepository>();
     stubRepository.getReservationQuantity.mockReturnValue(bookedSeats);
     const stubLogger = mock<ILogger>();
+    const stubCache = mock<ICache>();
+    stubCache.get.mockReturnValue(undefined);
     const reservation: Reservation = {
         id: 1,
         Date: "12/12/2022",
         Quantity: 3
     };
-    const sut = new MaitreDV2(capacity, stubRepository, stubLogger);
+    const sut = new MaitreDV2(capacity, stubRepository, stubLogger, stubCache);
 
     const result = sut.canReserve(reservation);
 
@@ -28,12 +30,14 @@ test("MaitreDV2 should not allow reservation if over capacity", () => {
     const stubRepository = mock<IReservationRepository>();
     stubRepository.getReservationQuantity.mockReturnValue(bookedSeats);
     const stubLogger = mock<ILogger>();
+    const stubCache = mock<ICache>();
+    stubCache.get.mockReturnValue(undefined);
     const reservation: Reservation = {
         id: 1,
         Date: "12/12/2022",
         Quantity: 3
     };
-    const sut = new MaitreDV2(capacity, stubRepository, stubLogger);
+    const sut = new MaitreDV2(capacity, stubRepository, stubLogger, stubCache);
 
     const result = sut.canReserve(reservation);
 
@@ -44,11 +48,31 @@ test("MaitreDV2 should return total capacity when asked for", () => {
     const capacity = 10;
     const stubRepository = mock<IReservationRepository>();
     const stubLogger = mock<ILogger>();
-    const sut = new MaitreDV2(capacity, stubRepository, stubLogger);
+    const stubCache = mock<ICache>();
+    const sut = new MaitreDV2(capacity, stubRepository, stubLogger, stubCache);
 
     const result = sut.getTotalCapacity();
 
     assert.equal(result, capacity);
+});
+
+test("MaitreDV2 should return cached value instead of calling repository", () => {
+    const capacity = 10;
+    const stubRepository = mock<IReservationRepository>();
+    const stubLogger = mock<ILogger>();
+    const stubCache = mock<ICache>();
+    stubCache.get.mockReturnValue(3);
+    const reservation: Reservation = {
+        id: 1,
+        Date: "12/12/2022",
+        Quantity: 3
+    };
+    const sut = new MaitreDV2(capacity, stubRepository, stubLogger, stubCache);
+
+    const result = sut.canReserve(reservation);
+
+    assert.equal(result, true);
+    expect(stubRepository.getReservationQuantity).not.toHaveBeenCalled();
 });
 
 test("CanReserve when called invokes logger with message", () => {
@@ -57,7 +81,9 @@ test("CanReserve when called invokes logger with message", () => {
     const stubRepository = mock<IReservationRepository>();
     stubRepository.getReservationQuantity.mockReturnValue(bookedSeats);
     const mockLogger = mock<ILogger>();
-    const sut = new MaitreDV2(capacity, stubRepository, mockLogger);
+    const stubCache = mock<ICache>();
+    stubCache.get.mockReturnValue(undefined);
+    const sut = new MaitreDV2(capacity, stubRepository, mockLogger, stubCache);
     const reservation: Reservation = {
         id: 1,
         Date: "12/12/2022",
@@ -80,7 +106,9 @@ test("CanReserve when called invokes getReservationQuantity from repository", ()
     const capacity = 10;
     const mockRepository = mock<IReservationRepository>();
     const stubLogger = mock<ILogger>();
-    const sut = new MaitreDV2(capacity, mockRepository, stubLogger);
+    const stubCache = mock<ICache>();
+    stubCache.get.mockReturnValue(undefined);
+    const sut = new MaitreDV2(capacity, mockRepository, stubLogger, stubCache);
     const reservation: Reservation = {
         id: 1,
         Date: "12/12/2022",

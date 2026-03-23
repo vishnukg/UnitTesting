@@ -1,5 +1,5 @@
 import { IMaitreD, Reservation } from ".";
-import { ILogger } from "../cross-cutting";
+import { ICache, ILogger } from "../cross-cutting";
 import { IReservationRepository } from "../repository";
 import { canAccommodate } from "./canAccommodate";
 
@@ -7,7 +7,8 @@ export class MaitreDV2 implements IMaitreD {
     constructor(
         private capacity: number,
         private reservationRepo: IReservationRepository,
-        private logger: ILogger
+        private logger: ILogger,
+        private cache: ICache
     ) {}
 
     getTotalCapacity(): number {
@@ -17,9 +18,14 @@ export class MaitreDV2 implements IMaitreD {
     canReserve(reservation: Reservation): boolean {
         this.logger.Log("Checking if the reservation can be made");
 
-        const reserved = this.reservationRepo.getReservationQuantity(
-            reservation.Date
-        );
+        const cacheKey = `reserved:${reservation.Date}`;
+        let reserved = this.cache.get<number>(cacheKey);
+        if (reserved === undefined) {
+            reserved = this.reservationRepo.getReservationQuantity(
+                reservation.Date
+            );
+            this.cache.set(cacheKey, reserved);
+        }
 
         return canAccommodate(reserved, reservation.Quantity, this.capacity);
     }

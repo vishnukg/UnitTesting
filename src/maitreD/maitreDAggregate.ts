@@ -1,16 +1,23 @@
-import { IMaitreD, IMaitreDContext, Reservation } from ".";
+import { IMaitreD, IRestaurantContext, IPaymentContext, Reservation } from ".";
 import { canAccommodate } from "./canAccommodate";
 
 export class MaitreDAggregate implements IMaitreD {
-    constructor(private context: IMaitreDContext) {}
+    constructor(
+        private restaurantContext: IRestaurantContext,
+        private paymentContext: IPaymentContext
+    ) {}
 
     getTotalCapacity(): number {
-        return this.context.capacity;
+        return this.restaurantContext.capacity;
     }
 
     canReserve(reservation: Reservation): boolean {
-        const reserved = this.context.reservationRepo
+        const reserved = this.restaurantContext.reservationRepo
             .getReservationQuantity(reservation.Date);
-        return canAccommodate(reserved, reservation.Quantity, this.context.capacity);
+        if (!canAccommodate(reserved, reservation.Quantity, this.restaurantContext.capacity)) {
+            return false;
+        }
+        return this.paymentContext.paymentProcessor
+            .holdDeposit(reservation.id, this.paymentContext.depositAmount);
     }
 }
