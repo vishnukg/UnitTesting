@@ -131,7 +131,7 @@ const logger     = createTestDouble<ILogger>();       // supporting (test double
 const sut = new OrderService(repository, logger); // ← this is what we're testing
 ```
 
-> _We'll cover test doubles (stubs, mocks, fakes) in detail shortly._
+> _We'll cover test doubles (stubs, mocks) in detail shortly._
 
 <!-- pause -->
 
@@ -613,9 +613,9 @@ test("CanReserve invokes logger with message", () => {
 Stubs vs Mocks (1/2)
 ---
 
-- **Fakes**
+- **Test Doubles**
 
-> _A working but simplified implementation — e.g. an in-memory database instead of a real one. The distinction between stub and mock depends on how it's used in the test._
+> _The generic term for any kind of pretend object used in place of a real object for testing purposes. The name comes from the notion of a Stunt Double in movies. — Gerard Meszaros_
 
 <!-- pause -->
 
@@ -627,17 +627,11 @@ Stubs vs Mocks (1/2)
 
 - **Mocks** — _Indirect Outputs_
 
-> _A fake that records interactions and decides whether the test passes or fails. Use these for **side-effects** (e.g. sending an email or logging). You assert on a mock. There's usually no more than one mock per test._
+> _A test double that records interactions and decides whether the test passes or fails. Use these for **side-effects** (e.g. sending an email or logging). You assert on a mock. There's usually no more than one mock per test._
 
 <!-- pause -->
 
-- **Spies**
-
-> _A spy wraps a real object and records calls to it without replacing its behaviour. Useful when you want to verify an interaction happened but still want the real implementation to run._
-
-<!-- pause -->
-
-> _**The rule:** asserting on it → **mock**. Feeding it data → **stub**. Full working implementation → **fake**. Wraps a real object → **spy**._
+> _**The rule:** asserting on it → **mock**. Feeding it data → **stub**._
 
 <!-- end_slide -->
 
@@ -967,6 +961,8 @@ export class MaitreDAggregate implements IMaitreD {
     }
 }
 ```
+
+> 💻 **nvim** `src/maitreD/maitreDAggregate.ts` · `src/maitreD/IReservationService.ts` · `src/maitreD/IPaymentService.ts`
 
 <!-- end_slide -->
 
